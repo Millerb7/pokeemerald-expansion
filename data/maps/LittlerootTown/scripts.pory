@@ -1803,6 +1803,7 @@ LittlerootTown_EventScript_GiveRunningShoes::
 	setflag FLAG_RECEIVED_RUNNING_SHOES
 # 907 "data/maps/LittlerootTown/scripts.pory"
 	giveitem ITEM_INFINITE_CANDY
+	giveitem ITEM_SOOTHE_BELL
 	setflag FLAG_SYS_DEXNAV_GET
 	playfanfare MUS_OBTAIN_ITEM
 	msgbox LittlerootTown_Text_ReceivedPokeVial, MSGBOX_DEFAULT

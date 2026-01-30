@@ -15538,6 +15538,19 @@ const struct Item gItemsInfo[] =
         .iconPalette = gItemIconPalette_BlueFlute,
     },
 
+    [ITEM_NATURE_SWAP] =
+    {
+        .name = _("Nature Swap"),
+        .price = 0,
+        .importance = 1,
+        .description = sNatureSwapDesc,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_NatureSwap,
+        .iconPic = gItemIcon_Flute,
+        .iconPalette = gItemIconPalette_BlueFlute,
+    },
+
     [ITEM_INFINITE_CANDY] =
     {
         .name = _("InfiniteCandy"),

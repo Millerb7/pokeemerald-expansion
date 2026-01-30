@@ -218,6 +218,7 @@ extern const u8 gText_MenuRetire[];
 extern const u8 gText_MenuRest[];
 extern const u8 gText_MenuPokeVial[];
 extern const u8 gText_MenuPokeVial2[];
+extern const u8 gText_MenuNatureSwap[];
 extern const u8 gText_MenuDexNav[];
 extern const u8 gText_TimeChanger[];
 extern const u8 gText_AutoRunOn[];

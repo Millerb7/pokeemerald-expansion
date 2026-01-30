@@ -2,6 +2,7 @@
 #define GUARD_ITEM_USE_H
 
 extern const u8 PokeVialHealScript[];
+extern const u8 NatureSwapScript[];
 extern const u8 PokeVialHealScript2[];
 void ItemUseOutOfBattle_Mail(u8);
 void ItemUseOutOfBattle_Bike(u8);
@@ -43,6 +44,8 @@ void ItemUseOutOfBattle_CannotUse(u8);
 void ItemUseOutOfBattle_ExpShare(u8);
 void ItemUseOutOfBattle_PokeVial(u8);
 void ItemUseCB_PokeVial(u8);
+void ItemUseOutOfBattle_NatureSwap(u8);
+void ItemUseCB_NatureSwap(u8);
 void ItemUseOutOfBattle_InfiniteRepel(u8);
 void ItemUseInBattle_BagMenu(u8 taskId);
 void ItemUseInBattle_PartyMenu(u8 taskId);

@@ -60,6 +60,7 @@ enum
 {
     MENU_ACTION_POKEVIAL,
     MENU_ACTION_PC,
+    MENU_ACTION_NATURE_SWAP,
     MENU_ACTION_DEXNAV,
     MENU_ACTION_TIME_CHANGER,
     MENU_ACTION_INFINITE_REPEL_ON,
@@ -87,6 +88,7 @@ static bool8 ShouldCallbackFadeToBlack(void);
 // Menu action callbacks
 static bool8 LMenuPCCallback(void);
 static bool8 LMenuPlayerNameCallback(void);
+static bool8 LMenuNatureSwapCallback(void);
 static bool8 LMenuDexNavCallback(void);
 static bool8 LMenuAutoRunCallback(void);
 static bool8 LMenuFollowersCallback(void);
@@ -117,6 +119,7 @@ static const struct MenuAction sLMenuItems[] =
 {
     [MENU_ACTION_POKEVIAL]              = {gText_MenuPokeVial, {.u8_void = LMenuPokeVialCallback}},
     [MENU_ACTION_PC]                    = {gText_MenuPC, {.u8_void = LMenuPCCallback}},
+    [MENU_ACTION_NATURE_SWAP]           = {gText_MenuNatureSwap, {.u8_void = LMenuNatureSwapCallback}},
     [MENU_ACTION_DEXNAV]                = {gText_MenuDexNav,  {.u8_void = LMenuDexNavCallback}},
     [MENU_ACTION_TIME_CHANGER]          = {gText_TimeChanger,  {.u8_void = LMenuTimeChangerCallback}},
     [MENU_ACTION_INFINITE_REPEL_ON]     = {gText_InfiniteRepelOn,  {.u8_void = LMenuInfiniteRepelCallback}},
@@ -149,6 +152,7 @@ static void HideLMenuWindowFollowers(void);
 static void HideLMenuWindowTimeChanger(void);
 static void HideLMenuWindowInfiniteRepel(void);
 static void HideLMenuWindowPokeVial(void);
+static void HideLMenuWindowNatureSwap(void);
 static void HideLMenuWindowPokeVial2(void);
 static void HideLMenuWindowNoWildMons(void);
 static void ShowTimeWindow(void);
@@ -212,6 +216,7 @@ static void BuildNormalLMenu(void)
         {
             AddLMenuAction(MENU_ACTION_POKEVIAL2);
         }
+        AddLMenuAction(MENU_ACTION_NATURE_SWAP);
     }
 
     if (hasDexNav)
@@ -319,6 +324,7 @@ static void BuildLinkModeLMenu(void)
         {
             AddLMenuAction(MENU_ACTION_POKEVIAL2);
         }
+        AddLMenuAction(MENU_ACTION_NATURE_SWAP);
     }
 
     if (hasDexNav)
@@ -385,6 +391,7 @@ static void BuildUnionRoomLMenu(void)
         {
             AddLMenuAction(MENU_ACTION_POKEVIAL2);
         }
+        AddLMenuAction(MENU_ACTION_NATURE_SWAP);
     }
 
     if (hasDexNav)
@@ -747,6 +754,8 @@ static bool8 ShouldCallbackFadeToBlack(void)
         return FALSE;
     if(gMenuCallback2 == LMenuPokeVialCallback)
         return FALSE;
+    if(gMenuCallback2 == LMenuNatureSwapCallback)
+        return FALSE;
     if(gMenuCallback2 == LMenuPokeVial2Callback)
         return FALSE;
     if(gMenuCallback2 == LMenuPCCallback)
@@ -953,6 +962,28 @@ static void HideLMenuWindowPokeVial(void)
     ScriptUnfreezeObjectEvents();
     UnlockPlayerFieldControls();
     ScriptContext_SetupScript(PokeVialHealScript);
+}
+
+static bool8 LMenuNatureSwapCallback(void)
+{
+    HideLMenuNatureSwap(); // Hide start menu
+    return TRUE;
+}
+
+void HideLMenuNatureSwap(void)
+{
+    PlaySE(SE_SELECT);
+    HideLMenuWindowNatureSwap();
+}
+
+static void HideLMenuWindowNatureSwap(void)
+{
+    ClearStdWindowAndFrame(GetLMenuWindowId(), TRUE);
+    RemoveLMenuWindow();
+    RemoveLMenuTimeWindow();
+    ScriptUnfreezeObjectEvents();
+    UnlockPlayerFieldControls();
+    ScriptContext_SetupScript(NatureSwapScript);
 }
 
 static bool8 LMenuPokeVial2Callback(void)

@@ -4672,6 +4672,12 @@ static const u8 sPokeVialDesc[] = _(
     "restores your party\n"
     "entirely.");
 
+static const u8 sNatureSwapDesc[] = _(
+    "The Nature Swap\n"
+    "changes your mon's nature\n"
+    "esketit.");
+
+
 static const u8 sInfiniteCandyDesc[] = _(
     "An ultra rare\n"
     "candy that never\n"

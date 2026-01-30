@@ -73,6 +73,10 @@
 #define RANDOMIZER_FLAG_ABILITIES           FLAG_RANDOM_ABILITIES_ENABLED
 #endif
 
+#ifndef FORCE_RANDOMIZE_MEGAS
+#define RANDOMIZER_FLAG_MEGA_ABILITIES      FLAG_RANDOM_MEGA_ABILITIES_ENABLED
+#endif
+
 #ifndef FORCE_RANDOMIZE_LEARNSETS
 #define RANDOMIZER_FLAG_LEARNSETS           FLAG_RANDOM_LEARNSETS_ENABLED
 #endif
@@ -109,6 +113,8 @@ enum RandomizerFeature
     RANDOMIZE_EGG_MON,
     // Randomization of Pokémon abilities.
     RANDOMIZE_ABILITIES,
+    // Randomization of Mega Pokémon abilities.
+    RANDOMIZE_MEGA_ABILITIES,
 };
 
 enum RandomizerReason

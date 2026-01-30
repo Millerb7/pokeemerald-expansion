@@ -1322,6 +1322,7 @@ const u8 gText_MenuExit[] = _("Exit");
 const u8 gText_MenuRetire[] = _("Retire");
 const u8 gText_MenuRest[] = _("Rest");
 const u8 gText_MenuPokeVial[] = _("PokéVial");
+const u8 gText_MenuNatureSwap[] = _("Nature Swap");
 const u8 gText_MenuPokeVial2[] = _("NuzVial");
 const u8 gText_MenuDexNav[] = _("DexNav");
 const u8 gText_TimeChanger[] = _("Time");

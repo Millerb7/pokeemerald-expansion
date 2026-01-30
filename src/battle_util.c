@@ -4146,6 +4146,106 @@ u32 CanAbilityAbsorbMove(u32 battlerAtk, u32 battlerDef, u32 abilityDef, u32 mov
     return effect;
 }
 
+// Returns a priority move the battler knows that is usable for Ambush.
+// Priority must be > 0 and the move must be damaging.
+// If none found, returns MOVE_NONE.
+static u16 GetAmbushPriorityMove(u32 battler)
+{
+    int i;
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        u16 move = gBattleMons[battler].moves[i];
+        if (move == MOVE_NONE)
+            continue;
+
+        if (gMovesInfo[move].power == 0)
+            continue;
+
+        if (move == MOVE_SUCKER_PUNCH || move == MOVE_THUNDERCLAP)
+            continue;
+
+        if (gMovesInfo[move].priority > 0)
+            return move;
+    }
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        u16 move = gBattleMons[battler].moves[i];
+        if (move == MOVE_NONE)
+            continue;
+
+        if (gMovesInfo[move].power == 0)
+            continue;
+
+        if ((move == MOVE_SUCKER_PUNCH || move == MOVE_THUNDERCLAP)
+            && gMovesInfo[move].priority > 0)
+            return move;
+    }
+
+    return MOVE_NONE;
+}
+
+
+static u32 GetAmbushTarget(u32 battler)
+{
+    u32 foe1 = BATTLE_OPPOSITE(battler);
+    u32 foe2 = BATTLE_PARTNER(foe1); // the other opponent in doubles
+
+    // Prefer the direct opposite if alive
+    if (IsBattlerAlive(foe1))
+        return foe1;
+
+    // Otherwise use the other foe if alive
+    if (IsBattlerAlive(foe2))
+        return foe2;
+
+    return MAX_BATTLERS_COUNT; // invalid
+}
+
+static bool32 TryDoAmbushAfterSwitchIn(u32 battler)
+{
+    u32 target;
+
+    if (gDisableStructs[battler].isFirstTurn == 2)
+        return;
+
+    if (GetBattlerAbility(battler) != ABILITY_AMBUSH)
+        return FALSE;
+
+    if (!gBattleStruct->ambushPending[battler])
+        return FALSE;
+
+    gBattleStruct->ambushPending[battler] = FALSE;
+
+    if (!IsBattlerAlive(battler))
+        return FALSE;
+
+    if (gBattleStruct->ambushMove[battler] == MOVE_NONE)
+        return FALSE;
+
+    target = GetAmbushTarget(battler);
+    if (target >= gBattlersCount || !IsBattlerAlive(target))
+        return FALSE;
+
+    // IMPORTANT: don't leave global "ability pop-up" state dirty
+    gBattlerAbility = battler;
+
+    gBattlerAttacker = battler;
+    gBattlerTarget = target;
+
+    gCalledMove = gBattleStruct->ambushMove[battler];
+    gCurrentMove = gCalledMove;
+    gBattleStruct->ambushMove[battler] = MOVE_NONE;
+
+    SetTypeBeforeUsingMove(gCalledMove, battler);
+
+    // Queue script; don't execute immediately
+    BattleScriptPushCursorAndCallback(BattleScript_AmbushActivates);
+    return TRUE;
+}
+
+
 u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 moveArg)
 {
     u32 effect = 0;
@@ -4766,6 +4866,72 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                 effect++;
             }
             break;
+        // miller custom abils
+        case ABILITY_MIND_GAMES:
+            if (!gSpecialStatuses[battler].switchInAbilityDone)
+            {
+                gBattlerAttacker = battler;
+                gSpecialStatuses[battler].switchInAbilityDone = TRUE;
+                SET_STATCHANGER(STAT_ACC, 1, TRUE); // -1 accuracy to foes
+                BattleScriptPushCursorAndCallback(BattleScript_IntimidateActivates);
+                effect++;
+            }
+            break;
+        case ABILITY_DREAD_PRESENCE:
+            if (!gSpecialStatuses[battler].switchInAbilityDone)
+            {
+                gBattlerAttacker = battler;
+                gSpecialStatuses[battler].switchInAbilityDone = TRUE;
+                SET_STATCHANGER(STAT_SPATK, 1, TRUE); // -1 SpA to foes
+                BattleScriptPushCursorAndCallback(BattleScript_IntimidateActivates);
+                effect++;
+            }
+            break;
+        case ABILITY_ENTRENCHED:
+            if (!gSpecialStatuses[battler].switchInAbilityDone)
+            {
+                gBattlerAttacker = battler;
+                gSpecialStatuses[battler].switchInAbilityDone = TRUE;
+                gBattleStruct->entrenchedPrimed[battler] = TRUE;
+                effect++;
+            }
+            break;
+        case ABILITY_FAST_START:
+            if (!gSpecialStatuses[battler].switchInAbilityDone)
+            {
+                gSpecialStatuses[battler].switchInAbilityDone = TRUE;
+                gBattlerAttacker = battler;
+
+                gBattleStruct->fastStartTurn[battler] = 1;
+                gBattleStruct->fastStartPhaseApplied[battler] = 1;
+
+                // Apply +2 Atk, +2 Spe right now
+                if (gBattleMons[battler].statStages[STAT_ATK] < MAX_STAT_STAGE)
+                    gBattleMons[battler].statStages[STAT_ATK] = min(MAX_STAT_STAGE, gBattleMons[battler].statStages[STAT_ATK] + 2);
+                if (gBattleMons[battler].statStages[STAT_SPATK] < MAX_STAT_STAGE)
+                    gBattleMons[battler].statStages[STAT_SPATK] = min(MAX_STAT_STAGE, gBattleMons[battler].statStages[STAT_SPATK] + 2);
+                if (gBattleMons[battler].statStages[STAT_SPEED] < MAX_STAT_STAGE)
+                    gBattleMons[battler].statStages[STAT_SPEED] = min(MAX_STAT_STAGE, gBattleMons[battler].statStages[STAT_SPEED] + 2);
+
+                effect++;
+            }
+            break;
+        case ABILITY_AMBUSH:
+        {
+            u16 ambushMove = GetAmbushPriorityMove(battler);
+
+            if (!gSpecialStatuses[battler].switchInAbilityDone
+                && ambushMove != MOVE_NONE)
+            {
+                gSpecialStatuses[battler].switchInAbilityDone = TRUE;
+                gBattleStruct->ambushPending[battler] = TRUE;
+                gBattleStruct->ambushMove[battler] = ambushMove;
+                effect++;
+            }
+            break;
+        }
+
+        // end miller abils
         case ABILITY_SUPERSWEET_SYRUP:
             if (!gSpecialStatuses[battler].switchInAbilityDone
                     && !(gBattleStruct->supersweetSyrup[GetBattlerSide(battler)] & (1u << gBattlerPartyIndexes[battler])))
@@ -5043,11 +5209,35 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
             }
             break;
         }
+
+        // After processing all switch-in effects for `battler`
+        if (TryDoAmbushAfterSwitchIn(battler))
+            effect++;
+
         break;
     case ABILITYEFFECT_ENDTURN:
         if (IsBattlerAlive(battler))
         {
             gBattlerAttacker = battler;
+            if (GetBattlerAbility(battler) == ABILITY_FAST_START
+                && gDisableStructs[battler].isFirstTurn != 2) // optional
+            {
+                u8 phase = gBattleStruct->fastStartPhaseApplied[battler];
+
+                if (phase == 1 || phase == 2)
+                {
+                    // Apply -1 to Atk/Spe/Def/SpD
+                    if (gBattleMons[battler].statStages[STAT_ATK]   > MIN_STAT_STAGE) gBattleMons[battler].statStages[STAT_ATK]--;
+                    if (gBattleMons[battler].statStages[STAT_SPATK]   > MIN_STAT_STAGE) gBattleMons[battler].statStages[STAT_SPATK]--;
+                    if (gBattleMons[battler].statStages[STAT_SPEED] > MIN_STAT_STAGE) gBattleMons[battler].statStages[STAT_SPEED]--;
+                    if (gBattleMons[battler].statStages[STAT_DEF]   > MIN_STAT_STAGE) gBattleMons[battler].statStages[STAT_DEF]--;
+                    if (gBattleMons[battler].statStages[STAT_SPDEF] > MIN_STAT_STAGE) gBattleMons[battler].statStages[STAT_SPDEF]--;
+
+                    gBattleStruct->fastStartPhaseApplied[battler] = phase + 1; // 1->2, 2->3
+                    effect++;
+                }
+            }
+
             switch (gLastUsedAbility)
             {
             case ABILITY_PICKUP:
@@ -9594,6 +9784,10 @@ static inline u32 CalcAttackStat(struct DamageCalculationData *damageCalcData, u
         if (gBattleMons[battlerAtk].status1 & STATUS1_ANY && IS_MOVE_PHYSICAL(move))
             modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
         break;
+    case ABILITY_MIND_OVER_MATTER:
+        if (gBattleMons[battlerAtk].status1 & STATUS1_ANY && IS_MOVE_SPECIAL(move))
+            modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
+        break;
     case ABILITY_TRANSISTOR:
         if (moveType == TYPE_ELECTRIC)
             modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
@@ -9801,6 +9995,10 @@ static inline u32 CalcDefenseStat(struct DamageCalculationData *damageCalcData, 
                 RecordAbilityBattle(battlerDef, ABILITY_MARVEL_SCALE);
         }
         break;
+    case ABILITY_FORTIFY:
+        modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.4));
+        break;
+
     case ABILITY_FUR_COAT:
         if (usesDefStat)
         {
@@ -9974,8 +10172,10 @@ static inline uq4_12_t GetBurnOrFrostBiteModifier(struct DamageCalculationData *
         return UQ_4_12(0.5);
     if (gBattleMons[battlerAtk].status1 & STATUS1_FROSTBITE
         && IS_MOVE_SPECIAL(move)
-        && (B_BURN_FACADE_DMG < GEN_6 || gMovesInfo[move].effect != EFFECT_FACADE))
+        && (B_BURN_FACADE_DMG < GEN_6 || gMovesInfo[move].effect != EFFECT_FACADE)
+        && abilityAtk != ABILITY_MIND_OVER_MATTER)
         return UQ_4_12(0.5);
+
     return UQ_4_12(1.0);
 }
 
@@ -10087,6 +10287,13 @@ static inline uq4_12_t GetDefenderAbilitiesModifier(u32 move, u32 moveType, u32 
     case ABILITY_SHADOW_SHIELD:
         if (BATTLER_MAX_HP(battlerDef))
             return UQ_4_12(0.5);
+        break;
+    case ABILITY_ENTRENCHED:
+        if (gBattleStruct->entrenchedPrimed[battlerDef])
+        {
+            gBattleStruct->entrenchedPrimed[battlerDef] = FALSE;
+            return UQ_4_12(0.333); // ~1/3 damage (66% reduction)
+        }
         break;
     case ABILITY_FILTER:
     case ABILITY_SOLID_ROCK:

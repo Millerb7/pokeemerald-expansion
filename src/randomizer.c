@@ -214,6 +214,13 @@ bool32 RandomizerFeatureEnabled(enum RandomizerFeature feature)
             #else
                 return FlagGet(RANDOMIZER_FLAG_ABILITIES);
             #endif
+        case RANDOMIZE_MEGA_ABILITIES:
+            #ifdef FORCE_RANDOMIZE_MEGAS
+                return FORCE_RANDOMIZE_MEGAS;
+            #else
+                return FlagGet(RANDOMIZER_FLAG_MEGA_ABILITIES);
+            #endif
+
         default:
             return FALSE;
     }
@@ -1128,37 +1135,123 @@ static inline bool32 IsAbilityIllegal(u16 ability)
     return FALSE;
 }
 
+static bool8 GetForcedAbilityForSpecies(u16 species, u16 *outAbility)
+{
+    switch (species)
+    {
+        // Core gimmicks / form mechanics
+        case SPECIES_WISHIWASHI:
+            *outAbility = ABILITY_SCHOOLING;
+            return TRUE;
 
+        case SPECIES_PALAFIN:
+        case SPECIES_PALAFIN_HERO: // if your repo has this as a separate species
+            *outAbility = ABILITY_ZERO_TO_HERO;
+            return TRUE;
+
+        case SPECIES_MINIOR:
+        case SPECIES_MINIOR_CORE:  // if split
+            *outAbility = ABILITY_SHIELDS_DOWN;
+            return TRUE;
+
+        case SPECIES_MIMIKYU:
+        case SPECIES_MIMIKYU_BUSTED: // if split
+            *outAbility = ABILITY_DISGUISE;
+            return TRUE;
+
+        case SPECIES_EISCUE:
+        case SPECIES_EISCUE_NOICE: // if split
+            *outAbility = ABILITY_ICE_FACE;
+            return TRUE;
+
+        case SPECIES_AEGISLASH:
+        case SPECIES_AEGISLASH_BLADE: // if split
+            *outAbility = ABILITY_STANCE_CHANGE;
+            return TRUE;
+
+        // Other “identity” abilities
+        case SPECIES_ZYGARDE:
+        case SPECIES_ZYGARDE_10:
+        case SPECIES_ZYGARDE_COMPLETE:
+            *outAbility = ABILITY_POWER_CONSTRUCT;
+            return TRUE;
+
+        case SPECIES_DARMANITAN:
+        case SPECIES_DARMANITAN_ZEN:
+        case SPECIES_DARMANITAN_GALAR:
+        case SPECIES_DARMANITAN_GALAR_ZEN:
+            *outAbility = ABILITY_ZEN_MODE;
+            return TRUE;
+
+        case SPECIES_CASTFORM:
+            *outAbility = ABILITY_FORECAST;
+            return TRUE;
+
+        case SPECIES_CHERRIM:
+        case SPECIES_CHERRIM_SUNSHINE:
+            *outAbility = ABILITY_FLOWER_GIFT;
+            return TRUE;
+
+        case SPECIES_MORPEKO:
+        case SPECIES_MORPEKO_HANGRY:
+            *outAbility = ABILITY_HUNGER_SWITCH;
+            return TRUE;
+
+        case SPECIES_CRAMORANT:
+        case SPECIES_CRAMORANT_GULPING:
+        case SPECIES_CRAMORANT_GORGING:
+            *outAbility = ABILITY_GULP_MISSILE;
+            return TRUE;
+
+        default:
+            return FALSE;
+    }
+}
+
+// Given a species and an abilityNum, returns a replacement for that ability.
 // Given a species and an abilityNum, returns a replacement for that ability.
 u16 RandomizeAbility(u16 species, u8 abilityNum, u16 originalAbility)
 {
+    u16 forcedAbility;
+    if (GetForcedAbilityForSpecies(species, &forcedAbility))
+        return forcedAbility;
 
-    if (RandomizerFeatureEnabled(RANDOMIZE_ABILITIES))
+    // If abilities aren't randomized at all, leave it alone
+    if (!RandomizerFeatureEnabled(RANDOMIZE_ABILITIES))
+        return originalAbility;
+
+    // Megas: only randomize if the *mega ability randomizer* flag/feature is enabled
+    if ((gSpeciesInfo[species].isMegaEvolution
+    || gSpeciesInfo[species].isPrimalReversion
+    || gSpeciesInfo[species].isUltraBurst
+    || gSpeciesInfo[species].isGigantamax)
+    && !RandomizerFeatureEnabled(RANDOMIZE_MEGA_ABILITIES))
     {
-        u8 actualAbilityNum = abilityNum;
-        // If the ability slot is ABILITY_NONE, find the last valid ability slot
-        if (gSpeciesInfo[species].abilities[abilityNum] == ABILITY_NONE && abilityNum > 0)
-        {
-            // Search backwards from the current slot to find the last valid ability
-            for (s8 i = abilityNum - 1; i >= 0; i--)
-            {
-                if (gSpeciesInfo[species].abilities[i] != ABILITY_NONE)
-                {
-                    actualAbilityNum = i;
-                    break;
-                }
-            }
-        }
-
-        // Seed the generator using the species and the actual ability slot
-        u32 seed = ((u32)species << 8) | actualAbilityNum;
-        struct Sfc32State state = RandomizerRandSeed(RANDOMIZER_REASON_ABILITIES, seed, species);
-
-        // Randomize abilities
-        return sRandomizerAbilityWhitelist[RandomizerNextRange(&state, ABILITY_WHITELIST_SIZE)];
+        return originalAbility;
     }
 
-    return originalAbility;
+
+    u8 actualAbilityNum = abilityNum;
+
+    // If the ability slot is ABILITY_NONE, find the last valid ability slot
+    if (gSpeciesInfo[species].abilities[abilityNum] == ABILITY_NONE && abilityNum > 0)
+    {
+        for (s8 i = (s8)abilityNum - 1; i >= 0; i--)
+        {
+            if (gSpeciesInfo[species].abilities[i] != ABILITY_NONE)
+            {
+                actualAbilityNum = (u8)i;
+                break;
+            }
+        }
+    }
+
+    // Seed the generator using the species and the actual ability slot
+    u32 seed = ((u32)species << 8) | actualAbilityNum;
+    struct Sfc32State state = RandomizerRandSeed(RANDOMIZER_REASON_ABILITIES, seed, species);
+
+    // Randomize abilities
+    return sRandomizerAbilityWhitelist[RandomizerNextRange(&state, ABILITY_WHITELIST_SIZE)];
 }
 
 #endif // RANDOMIZER_AVAILABLE

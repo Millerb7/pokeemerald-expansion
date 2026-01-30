@@ -498,60 +498,75 @@ script OldDaleTown_PokemonCenter_EventScript_SecondNurse_GetWhiteOutCount{
 }
 
 script OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo{
-	msgbox(VersionNumber)
+    msgbox(VersionNumber)
 
-	if(flag(FLAG_MIN_GRINDING_MODE))
-	{
-		if(var(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_EASY_MODE)
-		{
-			msgbox(EasyModeWithMgm)
-		}
-		else
-		{
-			msgbox(NormalModeWithMgm)
-		}
-	}
-	else
-	{
-		if(var(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_EASY_MODE)
-		{
-			msgbox(EasyMode)
-		}
-		else
-		{
-			msgbox(NormalMode)
-		}
-	}
-	msgbox("Randomizer options:")
-	if(flag(FLAG_RANDOMIZER_ENABLED))
-	{
-		switch(var(VAR_RANDOMIZER_MODE))
-		{
-			case MON_RANDOM:
-				msgbox("{COLOR GREEN}{SHADOW LIGHT_GREEN}Normal Species")
-			case MON_RANDOM_BST:
-				msgbox("{COLOR GREEN}{SHADOW LIGHT_GREEN}Scaled Species")
-			case MON_RANDOM_LEGEND_AWARE:
-				msgbox("{COLOR GREEN}{SHADOW LIGHT_GREEN}Legendary-aware Species")
-			default:
-				msgbox("Species not randomized")
-		}
-	}
-	if(flag(FLAG_RANDOM_ABILITIES_ENABLED))
-	{
-		msgbox("{COLOR GREEN}{SHADOW LIGHT_GREEN}Abilities")
-	}
-	if(flag(FLAG_RANDOM_LEARNSETS_ENABLED))
-	{
-		msgbox("{COLOR GREEN}{SHADOW LIGHT_GREEN}Learnsets")
-	}
-	if(!flag(FLAG_RANDOMIZER_ENABLED) && !flag(FLAG_RANDOM_ABILITIES_ENABLED) && !flag(FLAG_RANDOM_LEARNSETS_ENABLED))
-	{
-		msgbox("{COLOR RED}{SHADOW LIGHT_RED}None")
-	}
-	release
-	end
+    if(flag(FLAG_MIN_GRINDING_MODE))
+    {
+        if(var(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_EASY_MODE)
+        {
+            msgbox(EasyModeWithMgm)
+        }
+        else
+        {
+            msgbox(NormalModeWithMgm)
+        }
+    }
+    else
+    {
+        if(var(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_EASY_MODE)
+        {
+            msgbox(EasyMode)
+        }
+        else
+        {
+            msgbox(NormalMode)
+        }
+    }
+
+    msgbox("Randomizer options:")
+
+    if(flag(FLAG_RANDOMIZER_ENABLED))
+    {
+        switch(var(VAR_RANDOMIZER_MODE))
+        {
+            case MON_RANDOM:
+                msgbox("{COLOR GREEN}{SHADOW LIGHT_GREEN}Normal Species")
+            case MON_RANDOM_BST:
+                msgbox("{COLOR GREEN}{SHADOW LIGHT_GREEN}Scaled Species")
+            case MON_RANDOM_LEGEND_AWARE:
+                msgbox("{COLOR GREEN}{SHADOW LIGHT_GREEN}Legendary-aware Species")
+            default:
+                msgbox("Species not randomized")
+        }
+    }
+
+    if(flag(FLAG_RANDOM_ABILITIES_ENABLED))
+    {
+        msgbox("{COLOR GREEN}{SHADOW LIGHT_GREEN}Abilities")
+    }
+
+    if(flag(FLAG_RANDOM_MEGA_ABILITIES_ENABLED))
+    {
+        msgbox("{COLOR GREEN}{SHADOW LIGHT_GREEN}Mega Abilities")
+    }
+
+    if(flag(FLAG_RANDOM_LEARNSETS_ENABLED))
+    {
+        msgbox("{COLOR GREEN}{SHADOW LIGHT_GREEN}Learnsets")
+    }
+
+    if(!flag(FLAG_RANDOMIZER_ENABLED)
+    && !flag(FLAG_RANDOM_ABILITIES_ENABLED)
+    && !flag(FLAG_RANDOM_MEGA_ABILITIES_ENABLED)
+    && !flag(FLAG_RANDOM_LEARNSETS_ENABLED))
+    {
+        msgbox("{COLOR RED}{SHADOW LIGHT_RED}None")
+    }
+
+    release
+    end
 }
+
 
 text HelloHowCanIHelp
 {

@@ -244,104 +244,133 @@ script InsideOfTruck_EventScript_MinGrindingMode {
 
 
 script InsideOfTruck_EventScript_RandomzierOptions {
-	msgbox(WhichRandomizerOption)
-	if(flag(FLAG_RANDOMIZER_ENABLED))
-	{
-		dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Species", 0)
-	}
-		
-	else
-	{
-		dynmultipush("Species", 0)
-	}
-		
+    msgbox(WhichRandomizerOption)
 
-	if(flag(FLAG_RANDOM_ABILITIES_ENABLED))
-	{
-		dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Ability", 1)
-	}
-		
-	else
-	{
-		dynmultipush("Ability", 1)
-	}
-		
+    // Species
+    if(flag(FLAG_RANDOMIZER_ENABLED))
+    {
+        dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Species", 0)
+    }
+    else
+    {
+        dynmultipush("Species", 0)
+    }
 
-	// if(flag(FLAG_RANDOM_LEARNSETS_ENABLED))
-	// {
-	// 	dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Learnset", 2)
-	// }
-		
-	// else
-	// {
-	// 	dynmultipush("Learnset", 2)
-	// }
+    // Ability
+    if(flag(FLAG_RANDOM_ABILITIES_ENABLED))
+    {
+        dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Ability", 1)
+    }
+    else
+    {
+        dynmultipush("Ability", 1)
+    }
 
-	dynmultipush("Done", MULTI_B_PRESSED)
-	
-	// setting initial selected to a non-existant ID will always have it point to the first option
-	//.macro dynmultistack left:req, top:req, ignoreBPress:req, maxBeforeScroll:req, shouldSort:req, initialSelected:req, callbacks:req
-	dynmultistack(0, 0, FALSE, 6, FALSE, 0, DYN_MULTICHOICE_CB_NONE)
+    // Mega Ability (only meaningful if Ability randomizer is enabled)
+    if(flag(FLAG_RANDOM_ABILITIES_ENABLED))
+    {
+        if(flag(FLAG_RANDOM_MEGA_ABILITIES_ENABLED))
+        {
+            dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Mega Ability", 2)
+        }
+        else
+        {
+            dynmultipush("Mega Ability", 2)
+        }
+    }
+    else
+    {
+        // Show it but greyed-out-ish (no real gray, so just label it)
+        dynmultipush("Mega Ability (requires Ability)", 2)
+    }
 
-	if (var(VAR_RESULT) == MULTI_B_PRESSED) 
-	{
-		goto(InsideOfTruck_EventScript_StartSettingsMenu)
-	}
+    // Learnset (still commented out)
+    // if(flag(FLAG_RANDOM_LEARNSETS_ENABLED))
+    // {
+    //     dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Learnset", 3)
+    // }
+    // else
+    // {
+    //     dynmultipush("Learnset", 3)
+    // }
 
-	// Species
-	if(var(VAR_RESULT) == 0) 
-	{
-		goto(InsideOfTruck_EventScript_SpeciesRandomizerOptions)
-	}
+    dynmultipush("Done", MULTI_B_PRESSED)
 
-	// Ability
-	if(var(VAR_RESULT) == 1) 
-	{
-		if(flag(FLAG_RANDOM_ABILITIES_ENABLED))
-		{
-			msgbox(RandomAbilitiesAlreadyOnYesNo, MSGBOX_YESNO)
-			if(var(VAR_RESULT) == YES)
-			{
-				clearflag(FLAG_RANDOM_ABILITIES_ENABLED)
-				msgbox(RandomAbilitiesDisabled)
-			}
-		}
-		else
-		{
-			msgbox(RandomAbilitiesAlreadyOffYesNo, MSGBOX_YESNO)
-			if(var(VAR_RESULT) == YES)
-			{
-				setflag(FLAG_RANDOM_ABILITIES_ENABLED)
-				msgbox(RandomAbilitiesEnabled)
-			}
-		}
-		goto(InsideOfTruck_EventScript_RandomzierOptions)
-	}
+    dynmultistack(0, 0, FALSE, 6, FALSE, 0, DYN_MULTICHOICE_CB_NONE)
 
-	// Learnset
-	// if(var(VAR_RESULT) == 2) 
-	// {
-	// 	if(flag(FLAG_RANDOM_LEARNSETS_ENABLED))
-	// 	{
-	// 		msgbox(RandomLearnsetsAlreadyOnYesNo, MSGBOX_YESNO)
-	// 		if(var(VAR_RESULT) == YES)
-	// 		{
-	// 			clearflag(FLAG_RANDOM_LEARNSETS_ENABLED)
-	// 			msgbox(RandomLearnsetsDisabled)
-	// 		}
-	// 	}
-	// 	else
-	// 	{
-	// 		msgbox(RandomLearnsetsAlreadyOffYesNo, MSGBOX_YESNO)
-	// 		if(var(VAR_RESULT) == YES)
-	// 		{
-	// 			setflag(FLAG_RANDOM_LEARNSETS_ENABLED)
-	// 			msgbox(RandomLearnsetsEnabled)
-	// 		}
-	// 	}
-	// 	goto(InsideOfTruck_EventScript_RandomzierOptions)
-	// }
+    if (var(VAR_RESULT) == MULTI_B_PRESSED)
+    {
+        goto(InsideOfTruck_EventScript_StartSettingsMenu)
+    }
+
+    // Species
+    if(var(VAR_RESULT) == 0)
+    {
+        goto(InsideOfTruck_EventScript_SpeciesRandomizerOptions)
+    }
+
+    // Ability
+    if(var(VAR_RESULT) == 1)
+    {
+        if(flag(FLAG_RANDOM_ABILITIES_ENABLED))
+        {
+            msgbox(RandomAbilitiesAlreadyOnYesNo, MSGBOX_YESNO)
+            if(var(VAR_RESULT) == YES)
+            {
+                clearflag(FLAG_RANDOM_ABILITIES_ENABLED)
+                clearflag(FLAG_RANDOM_MEGA_ABILITIES_ENABLED) // turn this off too
+                msgbox(RandomAbilitiesDisabled)
+            }
+        }
+        else
+        {
+            msgbox(RandomAbilitiesAlreadyOffYesNo, MSGBOX_YESNO)
+            if(var(VAR_RESULT) == YES)
+            {
+                setflag(FLAG_RANDOM_ABILITIES_ENABLED)
+                msgbox(RandomAbilitiesEnabled)
+            }
+        }
+        goto(InsideOfTruck_EventScript_RandomzierOptions)
+    }
+
+    // Mega Ability
+    if(var(VAR_RESULT) == 2)
+    {
+        if(!flag(FLAG_RANDOM_ABILITIES_ENABLED))
+        {
+            msgbox("Turn on Ability randomizer first.")
+            goto(InsideOfTruck_EventScript_RandomzierOptions)
+        }
+
+        if(flag(FLAG_RANDOM_MEGA_ABILITIES_ENABLED))
+        {
+            msgbox("Randomize Mega Abilities is currently ON.\nTurn it OFF?", MSGBOX_YESNO)
+            if(var(VAR_RESULT) == YES)
+            {
+                clearflag(FLAG_RANDOM_MEGA_ABILITIES_ENABLED)
+                msgbox("Mega Abilities will no longer be randomized.")
+            }
+        }
+        else
+        {
+            msgbox("Randomize Mega Abilities is currently OFF.\nTurn it ON?", MSGBOX_YESNO)
+            if(var(VAR_RESULT) == YES)
+            {
+                setflag(FLAG_RANDOM_MEGA_ABILITIES_ENABLED)
+                msgbox("Mega Abilities will now be randomized.")
+            }
+        }
+        goto(InsideOfTruck_EventScript_RandomzierOptions)
+    }
+
+    // Learnset (if you re-enable it later, remember to bump the IDs accordingly)
+    // if(var(VAR_RESULT) == 3)
+    // {
+    //     ...
+    // }
 }
+
 
 script InsideOfTruck_EventScript_SpeciesRandomizerOptions {
 	msgbox(WhichSpeciesRandomizerOption)

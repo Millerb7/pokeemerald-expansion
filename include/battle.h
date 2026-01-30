@@ -841,6 +841,17 @@ struct BattleStruct
     u16 prevTurnSpecies[MAX_BATTLERS_COUNT]; // Stores species the AI has in play at start of turn
     u8 hasBattleInputStarted:1; // Speed up battle
     u8 noTargetPresent:1;
+    // miller custom abils
+    u8 entrenchedPrimed[MAX_BATTLERS_COUNT];
+    u16 shieldHP[MAX_BATTLERS_COUNT];
+    u8 fastStartTurn[MAX_BATTLERS_COUNT];   // 1,2,3...
+    u8 fastStartPhaseApplied[MAX_BATTLERS_COUNT];
+    u16 ruminatorBerry[MAX_BATTLERS_COUNT];     // item id of berry to re-eat
+    u8  ruminatorPending[MAX_BATTLERS_COUNT];   // bool: should re-eat end of next turn
+    u8  ambushPending[MAX_BATTLERS_COUNT];
+    u16 ambushMove[MAX_BATTLERS_COUNT];
+
+
 };
 
 // The palaceFlags member of struct BattleStruct contains 1 flag per move to indicate which moves the AI should consider,

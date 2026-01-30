@@ -913,21 +913,24 @@ OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo::
 # 522 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	msgbox NormalMode
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_1:
-# 525 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
-	msgbox OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_0
 # 526 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_0
+# 528 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	goto_if_set FLAG_RANDOMIZER_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_6
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_5:
-# 540 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 543 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	goto_if_set FLAG_RANDOM_ABILITIES_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_15
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_14:
-# 544 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
-	goto_if_set FLAG_RANDOM_LEARNSETS_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_23
-OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_22:
 # 548 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
-	goto_if_unset FLAG_RANDOMIZER_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_28
+	goto_if_set FLAG_RANDOM_MEGA_ABILITIES_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_23
+OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_22:
+# 553 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto_if_set FLAG_RANDOM_LEARNSETS_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_26
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_25:
-# 552 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 558 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto_if_unset FLAG_RANDOMIZER_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_31
+OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_28:
+# 566 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	release
 	end
 
@@ -940,15 +943,15 @@ OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_2:
 	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_1
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_6:
-# 528 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
-	switch VAR_RANDOMIZER_MODE
 # 530 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
-	case MON_RANDOM, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_18
+	switch VAR_RANDOMIZER_MODE
 # 532 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
-	case MON_RANDOM_BST, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_19
+	case MON_RANDOM, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_18
 # 534 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	case MON_RANDOM_BST, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_19
+# 536 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	case MON_RANDOM_LEGEND_AWARE, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_20
-# 537 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 539 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	msgbox OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_4
 	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_5
 
@@ -963,44 +966,54 @@ OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_11:
 	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_1
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_15:
-# 542 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 545 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	msgbox OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_5
 	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_14
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_18:
-# 531 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 533 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	msgbox OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_1
 	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_5
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_19:
-# 533 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 535 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	msgbox OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_2
 	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_5
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_20:
-# 535 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 537 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	msgbox OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_3
 	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_5
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_23:
-# 546 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 550 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	msgbox OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_6
 	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_22
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_26:
-# 550 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 555 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	msgbox OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_7
 	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_25
 
-OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_27:
-# 548 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
-	goto_if_unset FLAG_RANDOM_LEARNSETS_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_26
-	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_25
+OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_29:
+# 563 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_8
+	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_28
 
-OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_28:
-# 548 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
-	goto_if_unset FLAG_RANDOM_ABILITIES_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_27
-	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_25
+OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_30:
+# 560 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto_if_unset FLAG_RANDOM_MEGA_ABILITIES_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_34
+	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_28
+
+OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_31:
+# 559 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto_if_unset FLAG_RANDOM_ABILITIES_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_30
+	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_28
+
+OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_34:
+# 561 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto_if_unset FLAG_RANDOM_LEARNSETS_ENABLED, OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_29
+	goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_28
 
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_Text_0:
@@ -1192,50 +1205,54 @@ OldDaleTown_PokemonCenter_EventScript_SecondNurse_GetWhiteOutCount_Text_1:
 	.string "Current White Out Count: {STR_VAR_1}$"
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_0:
-# 525 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 526 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "Randomizer options:$"
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_1:
-# 531 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 533 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "{COLOR GREEN}{SHADOW LIGHT_GREEN}Normal Species$"
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_2:
-# 533 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 535 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "{COLOR GREEN}{SHADOW LIGHT_GREEN}Scaled Species$"
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_3:
-# 535 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 537 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "{COLOR GREEN}{SHADOW LIGHT_GREEN}Legendary-aware Species$"
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_4:
-# 537 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 539 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "Species not randomized$"
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_5:
-# 542 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 545 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "{COLOR GREEN}{SHADOW LIGHT_GREEN}Abilities$"
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_6:
-# 546 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
-	.string "{COLOR GREEN}{SHADOW LIGHT_GREEN}Learnsets$"
+# 550 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{COLOR GREEN}{SHADOW LIGHT_GREEN}Mega Abilities$"
 
 OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_7:
-# 550 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 555 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{COLOR GREEN}{SHADOW LIGHT_GREEN}Learnsets$"
+
+OldDaleTown_PokemonCenter_EventScript_SecondNurse_ModeInfo_Text_8:
+# 563 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "{COLOR RED}{SHADOW LIGHT_RED}None$"
 
 HelloHowCanIHelp::
-# 556 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 571 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "Hello there, what can I help you\n"
 	.string "with today?$"
 
 AreYouSureNatureChange::
-# 562 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 577 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "I will now change\n"
 	.string "{STR_VAR_1}'s Nature to {STR_VAR_2}.\p"
 	.string "Is that okay?$"
 
 GenderSwapInfo::
-# 570 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 585 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "I can swap the Gender of the\n"
 	.string "following Pokémon:\p"
 	.string "{COLOR GREEN}{SHADOW LIGHT_GREEN}Snorunt, Ralts, Kirlia, Salandit, Burmy,\n"
@@ -1245,31 +1262,31 @@ GenderSwapInfo::
 	.string "Which Pokémon's Gender should I swap?$"
 
 AreYouSureGenderSwap::
-# 581 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 596 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "I will now swap\n"
 	.string "{STR_VAR_1}'s Gender.\p"
 	.string "Is that okay?$"
 
 TellLevelCapAndAsk::
-# 588 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 603 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "Current Level Cap: {STR_VAR_3}.\p"
 	.string "Would you like to set a Pokémon\n"
 	.string "to level {STR_VAR_3}?$"
 
 AreYouSureLevelCap::
-# 595 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 610 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "I will now set {STR_VAR_1}\n"
 	.string "to level {STR_VAR_3}.\p"
 	.string "Is that okay?$"
 
 MonHasBeenSetToLevelCap::
-# 602 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 617 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "{STR_VAR_1} has been set\n"
 	.string "to level {STR_VAR_3}.\p"
 	.string "Come again if you need something else.$"
 
 TellLevelCapAndAskBox::
-# 609 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 624 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "Current Level Cap: {STR_VAR_3}.\p"
 	.string "I can set all Unmarked Pokémon in your\n"
 	.string "PC and Party to level {STR_VAR_3}.\p"
@@ -1279,45 +1296,45 @@ TellLevelCapAndAskBox::
 	.string "Pokémon to level {STR_VAR_3}?$"
 
 AreYouSureLevelCapBox::
-# 620 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 635 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "I will now set all Unmarked Pokémon in\n"
 	.string "your PC and Party to level {STR_VAR_3}.\p"
 	.string "Is that okay?$"
 
 BoxHasBeenSetToLevelCap::
-# 627 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 642 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "All Unmarked Pokémon in your PC and\n"
 	.string "Party have been set to level {STR_VAR_3}.\p"
 	.string "Come again if you need something else.$"
 
 FeatureAvailableAfterMoveTutor::
-# 634 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 649 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "This feature will become available once\n"
 	.string "you have met the Move Relearner in\l"
 	.string "Dewford Town.$"
 
 VersionNumber::
-# 641 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 656 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "Version: 1.3.1$"
 
 EasyMode::
-# 646 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 661 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "Difficulty: {COLOR GREEN}{SHADOW LIGHT_GREEN}Easy Mode$"
 
 EasyModeWithMgm::
-# 651 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 666 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "Difficulty: {COLOR GREEN}{SHADOW LIGHT_GREEN}Easy Mode\n"
 	.string "{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY}with {COLOR GREEN}{SHADOW LIGHT_GREEN}Minimal Grinding Mode$"
 
 NormalMode::
-# 657 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 672 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "Difficulty: {COLOR GREEN}{SHADOW LIGHT_GREEN}Normal Mode$"
 
 NormalModeWithMgm::
-# 662 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 677 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "Difficulty: {COLOR GREEN}{SHADOW LIGHT_GREEN}Normal Mode\n"
 	.string "{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY}with {COLOR GREEN}{SHADOW LIGHT_GREEN}Minimal Grinding Mode$"
 
 LevelCapIncreasedTo::
-# 668 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+# 683 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "{COLOR BLUE}{SHADOW LIGHT_BLUE}Level Cap increased to: {STR_VAR_3}.$"

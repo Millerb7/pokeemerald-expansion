@@ -2531,6 +2531,91 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
         .aiRating = 6,
     },
 
+    // miller custom abils
+    [ABILITY_MIND_GAMES] =
+    {
+        .name = _("Mind Games"),
+        .description = COMPOUND_STRING("Lowers foe's accuracy on entry."),
+        .aiRating = 7,
+    },
+
+    [ABILITY_DREAD_PRESENCE] =
+    {
+        .name = _("Dread Presence"),
+        .description = COMPOUND_STRING("Lowers foe's Sp. Atk on entry."),
+        .aiRating = 7,
+    },
+
+    [ABILITY_ENTRENCHED] =
+    {
+        .name = _("Entrenched"),
+        .description = COMPOUND_STRING("Reduces damage from first hit."),
+        .aiRating = 7,
+    },
+
+    [ABILITY_FAST_START] =
+    {
+        .name = _("Fast Start"),
+        .description = COMPOUND_STRING("Starts strong, weakens quickly."),
+        .aiRating = 8,
+    },
+
+    [ABILITY_GLASS_JAW] =
+    {
+        .name = _("Glass Jaw"),
+        .description = COMPOUND_STRING("Boosts damage, takes more hits."),
+        .aiRating = 7,
+    },
+
+    [ABILITY_BLOOD_TITHE] =
+    {
+        .name = _("Blood Tithe"),
+        .description = COMPOUND_STRING("Boosts power at HP cost."),
+        .aiRating = 7,
+    },
+
+    [ABILITY_SCAVENGER] =
+    {
+        .name = _("Scavenger"),
+        .description = COMPOUND_STRING("Gains power after stealing or removing items."),
+        .aiRating = 7,
+    },
+
+    [ABILITY_MIND_OVER_MATTER] =
+    {
+        .name = _("Mind Over Matter"),
+        .description = COMPOUND_STRING("Status boosts Sp. Atk."),
+        .aiRating = 7,
+    },
+
+    [ABILITY_FORTIFY] =
+    {
+        .name = _("Fortify"),
+        .description = COMPOUND_STRING("Slower, but much bulkier."),
+        .aiRating = 7,
+    },
+
+    [ABILITY_DISTRACTION] =
+    {
+        .name = _("Distraction"),
+        .description = COMPOUND_STRING("Weakens multi-hit moves."),
+        .aiRating = 6,
+    },
+
+    [ABILITY_RUMINATOR] =
+    {
+        .name = _("Ruminator"),
+        .description = COMPOUND_STRING("Reuses berries once."),
+        .aiRating = 7,
+    },
+
+    [ABILITY_AMBUSH] =
+    {
+        .name = _("Ambush"),
+        .description = COMPOUND_STRING("Strikes first on entry with users priority move."),
+        .aiRating = 7,
+    },
+
     
 
 };

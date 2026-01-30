@@ -258,6 +258,31 @@ void ItemUseCB_PokeVial(u8 taskId)
     DestroyTask(taskId);
 }
 
+void ItemUseOutOfBattle_NatureSwap(u8 taskId)
+{
+    if(!gTasks[taskId].tUsingRegisteredKeyItem)
+    {
+        sItemUseOnFieldCB = ItemUseCB_NatureSwap;
+        gFieldCallback = FieldCB_UseItemOnField;
+        gBagMenu->newScreenCallback = CB2_ReturnToField;
+        Task_FadeAndCloseBagMenu(taskId);
+    }
+    else
+    {
+        sItemUseOnFieldCB = ItemUseCB_NatureSwap;
+        SetUpItemUseOnFieldCallback(taskId);
+    }
+}
+
+extern u8 NatureSwapScriptItem[];
+void ItemUseCB_NatureSwap(u8 taskId)
+{
+    LockPlayerFieldControls();
+    ScriptContext_SetupScript(NatureSwapScriptItem);
+    DestroyTask(taskId);
+}
+
+
 void ItemUseOutOfBattle_Bike(u8 taskId)
 {
     s16 *data = gTasks[taskId].data;

@@ -152,6 +152,14 @@ PokeVialText::
 PokeVial2Text::
 	.string "Your party was… almost fully healed.$"
 
+NatureSwapScript::
+    goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ChangeNature
+    end
+
+NatureSwapScriptItem::
+    goto OldDaleTown_PokemonCenter_EventScript_SecondNurse_ChangeNature
+    end
+
 Movement_PkmnCenterNurse_Turn:
 	walk_in_place_faster_left
 	step_end

@@ -132,8 +132,8 @@ InsideOfTruck_EventScript_SetDefaultSettings:
 InsideOfTruck_EventScript_GiveStarterItems::
 	giveitem ITEM_TM27, 1
 	giveitem ITEM_ABILITY_CAPSULE, 1
-	giveitem ITEM_ABILITY_SHARD, 20
-	giveitem ITEM_ABILITY_PATCH, 10
+	giveitem ITEM_ABILITY_SHARD, 2
+	giveitem ITEM_ABILITY_PATCH, 1
 	return
 
 InsideOfTruck_EventScript_SetMyModeSettings:

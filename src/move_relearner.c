@@ -184,6 +184,8 @@ static EWRAM_DATA struct {
     bool8 showContestInfo;
 } sMoveRelearnerMenuSate = {0};
 
+static MainCallback sMoveRelearnerReturnCallback = NULL;
+
 static const u16 sUI_Pal[] = INCBIN_U16("graphics/interface/ui_learn_move.gbapal");
 
 // The arrow sprites in this spritesheet aren't used. The scroll-arrow system provides its own
@@ -370,6 +372,11 @@ static void VBlankCB_MoveRelearner(void)
     LoadOam();
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
+}
+
+void SetMoveRelearnerReturnCallback(MainCallback callback)
+{
+    sMoveRelearnerReturnCallback = callback;
 }
 
 // Script arguments: The Pokémon to teach is in VAR_0x8004
@@ -690,6 +697,12 @@ static void DoMoveRelearnerMain(void)
 			{
 				CB2_ReturnToPartyMenuFromSummaryScreen();
 				FlagClear(FLAG_PARTY_MOVES);
+			}
+			else if (sMoveRelearnerReturnCallback != NULL)
+			{
+				MainCallback cb = sMoveRelearnerReturnCallback;
+				sMoveRelearnerReturnCallback = NULL;
+				SetMainCallback2(cb);
 			}
 			else
 			{

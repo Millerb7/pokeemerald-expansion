@@ -267,9 +267,9 @@ InsideOfTruck_EventScript_GiveStarterItems::
 # 134 "data/maps/InsideOfTruck/scripts.pory"
 	giveitem ITEM_ABILITY_CAPSULE, 1
 # 135 "data/maps/InsideOfTruck/scripts.pory"
-	giveitem ITEM_ABILITY_SHARD, 20
+	giveitem ITEM_ABILITY_SHARD, 2
 # 136 "data/maps/InsideOfTruck/scripts.pory"
-	giveitem ITEM_ABILITY_PATCH, 10
+	giveitem ITEM_ABILITY_PATCH, 1
 # 137 "data/maps/InsideOfTruck/scripts.pory"
 	return
 # 138 "data/maps/InsideOfTruck/scripts.pory"

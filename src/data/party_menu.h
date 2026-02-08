@@ -898,6 +898,7 @@ struct
 } static const sCursorOptions[MENU_FIELD_MOVES] =
 {
     [MENU_SUMMARY] = {gText_Summary5, CursorCb_Summary},
+    [MENU_CHECK_ABILITIES] = {gText_CheckAbilities, CursorCb_CheckAbilities},
     [MENU_RELEARN_BOTH] = {gText_Relearn_Menu, CursorCb_RelearnBoth},
     [MENU_RELEARN_LVL_UP] = {gText_Relearn_Menu, CursorCb_RelearnLvlUp},
     [MENU_RELEARN_EGG] = {gText_Relearn_Menu, CursorCb_RelearnEgg},

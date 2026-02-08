@@ -2738,6 +2738,7 @@ extern const u8 gText_ExpShareOff[];
 
 extern const u8 gText_BasePointsResetToZero[];
 extern const u8 gText_Relearn_Menu[];
+extern const u8 gText_CheckAbilities[];
 extern const u8 gText_LvlUpMoves_Menu[];
 extern const u8 gText_EggMoves_Menu[];
 

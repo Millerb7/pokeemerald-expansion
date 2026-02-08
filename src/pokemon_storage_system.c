@@ -20,6 +20,7 @@
 #include "mail.h"
 #include "main.h"
 #include "menu.h"
+#include "move_relearner.h"
 #include "mon_markings.h"
 #include "naming_screen.h"
 #include "overworld.h"
@@ -140,6 +141,8 @@ enum {
     MENU_SWITCH,
     MENU_BAG,
     MENU_INFO,
+    MENU_RELEARN,
+    MENU_CHECK_ABILITIES,
     MENU_SCENERY_1,
     MENU_SCENERY_2,
     MENU_SCENERY_3,
@@ -202,6 +205,7 @@ enum {
     SCREEN_CHANGE_SUMMARY_SCREEN,
     SCREEN_CHANGE_NAME_BOX,
     SCREEN_CHANGE_ITEM_FROM_BAG,
+    SCREEN_CHANGE_RELEARN,
 };
 
 enum {
@@ -576,6 +580,11 @@ static u32 sItemIconGfxBuffer[98];
 EWRAM_DATA static u8 sPreviousBoxOption = 0;
 EWRAM_DATA static struct ChooseBoxMenu *sChooseBoxMenu = NULL;
 EWRAM_DATA static struct PokemonStorageSystemData *sStorage = NULL;
+
+// Used when returning from move relearner opened from PC
+static u8 sRelearnerBoxId;
+static u8 sRelearnerBoxSlot;
+static struct Pokemon sRelearnerSavedParty0;
 EWRAM_DATA static bool8 sInPartyMenu = 0;
 EWRAM_DATA static u8 sCurrentBoxOption = 0;
 EWRAM_DATA static u8 sDepositBoxId = 0;
@@ -690,6 +699,10 @@ static void LoadSavedMovingMon(void);
 static void InitSummaryScreenData(void);
 static void SetSelectionAfterSummaryScreen(void);
 static void SetMonMarkings(u8);
+static void Task_ShowRelearner(u8 taskId);
+static void Task_ShowCheckAbilities(u8 taskId);
+static void CB2_ReturnFromPCRelearner(void);
+static void PrintMessageFromBuffer(const u8 *str);
 static bool8 IsRemovingLastPartyMon(void);
 static bool8 CanPlaceMon(void);
 static bool8 CanShiftMon(void);
@@ -2145,6 +2158,9 @@ static void Task_InitPokeStorage(u8 taskId)
                 // Return from bag menu
                 GiveChosenBagItem();
                 break;
+            case SCREEN_CHANGE_RELEARN - 1:
+                // Return from move relearner (cursor position unchanged)
+                break;
             }
         }
         LoadPokeStorageMenuGfx();
@@ -2715,6 +2731,14 @@ static void Task_OnSelectedMon(u8 taskId)
         case MENU_SUMMARY:
             PlaySE(SE_SELECT);
             SetPokeStorageTask(Task_ShowMonSummary);
+            break;
+        case MENU_RELEARN:
+            PlaySE(SE_SELECT);
+            SetPokeStorageTask(Task_ShowRelearner);
+            break;
+        case MENU_CHECK_ABILITIES:
+            PlaySE(SE_SELECT);
+            SetPokeStorageTask(Task_ShowCheckAbilities);
             break;
         case MENU_MARK:
             PlaySE(SE_SELECT);
@@ -3623,6 +3647,126 @@ static void Task_ShowMonSummary(u8 taskId)
     }
 }
 
+// Bridge callback: runs after we free storage and before move relearner takes over.
+// Runs tasks (so Task_WaitForFadeOut can run) and palette fade; does not use sStorage.
+static void CB2_PrepareRelearnerFromPC(void)
+{
+    RunTasks();
+    AnimateSprites();
+    BuildOamBuffer();
+    UpdatePaletteFade();
+}
+
+static void CB2_ReturnFromPCRelearner(void)
+{
+    SetBoxMonAt(sRelearnerBoxId, sRelearnerBoxSlot, &gPlayerParty[0].box);
+    gPlayerParty[0] = sRelearnerSavedParty0;
+    CB2_ReturnToPokeStorage();
+}
+
+static void Task_ShowRelearner(u8 taskId)
+{
+    switch (sStorage->state)
+    {
+    case 0:
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+        sStorage->state++;
+        break;
+    case 1:
+        if (!UpdatePaletteFade())
+        {
+            sRelearnerBoxId = StorageGetCurrentBox();
+            sRelearnerBoxSlot = (u8)sCursorPosition;
+            sRelearnerSavedParty0 = gPlayerParty[0];
+            BoxMonAtToMon(sRelearnerBoxId, sRelearnerBoxSlot, &gPlayerParty[0]);
+            gSpecialVar_0x8004 = 0;
+            gSpecialVar_0x8005 = GetNumberOfRelearnableMoves(&gPlayerParty[0]);
+            SetMoveRelearnerReturnCallback(CB2_ReturnFromPCRelearner);
+            sWhichToReshow = SCREEN_CHANGE_RELEARN - 1;
+            sStorage->screenChangeType = SCREEN_CHANGE_RELEARN;
+            SetPokeStorageTask(Task_ChangeScreen);
+        }
+        break;
+    }
+}
+
+static void Task_ShowCheckAbilities(u8 taskId)
+{
+    static const u8 sAbilitiesIntro[] = _("'s abilities:\nPress A or B");
+    static const u8 sSlot1Prefix[] = _("Slot 1: ");
+    static const u8 sSlot2Prefix[] = _("Slot 2: ");
+    static const u8 sSlot3Prefix[] = _("Slot 3: ");
+    static const u8 sActive[] = _(" (Active)");
+    static u16 sCheckAbilities_ability0, sCheckAbilities_ability1, sCheckAbilities_ability2;
+    static u8 sCheckAbilities_currentSlot;
+    u8 messageBuffer[256];
+    u32 slots;
+    u32 currentSlotVal;
+    u16 species;
+
+    switch (sStorage->state)
+    {
+    case 0:
+        species = sStorage->displayMonSpecies;
+        slots = GetCurrentBoxMonData((u8)sCursorPosition, MON_DATA_ABILITY_SLOTS);
+        currentSlotVal = GetCurrentBoxMonData((u8)sCursorPosition, MON_DATA_ABILITY_NUM);
+        sCheckAbilities_currentSlot = (u8)currentSlotVal;
+        sCheckAbilities_ability0 = (slots != 0) ? GetAbilityFromSlots(slots, 0) : GetAbilityBySpecies(species, 0, FALSE);
+        sCheckAbilities_ability1 = (slots != 0) ? GetAbilityFromSlots(slots, 1) : GetAbilityBySpecies(species, 1, FALSE);
+        sCheckAbilities_ability2 = (slots != 0) ? GetAbilityFromSlots(slots, 2) : GetAbilityBySpecies(species, 2, FALSE);
+
+        StringCopy(messageBuffer, sStorage->displayMonName);
+        StringAppend(messageBuffer, sAbilitiesIntro);
+        ClearBottomWindow();
+        PrintMessageFromBuffer(messageBuffer);
+        sStorage->state++;
+        break;
+    case 1:
+        if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+        {
+            StringCopy(messageBuffer, sSlot1Prefix);
+            StringAppend(messageBuffer, gAbilitiesInfo[sCheckAbilities_ability0].name);
+            if (sCheckAbilities_currentSlot == 0)
+                StringAppend(messageBuffer, sActive);
+            ClearBottomWindow();
+            PrintMessageFromBuffer(messageBuffer);
+            sStorage->state++;
+        }
+        break;
+    case 2:
+        if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+        {
+            StringCopy(messageBuffer, sSlot2Prefix);
+            StringAppend(messageBuffer, gAbilitiesInfo[sCheckAbilities_ability1].name);
+            if (sCheckAbilities_currentSlot == 1)
+                StringAppend(messageBuffer, sActive);
+            ClearBottomWindow();
+            PrintMessageFromBuffer(messageBuffer);
+            sStorage->state++;
+        }
+        break;
+    case 3:
+        if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+        {
+            StringCopy(messageBuffer, sSlot3Prefix);
+            StringAppend(messageBuffer, gAbilitiesInfo[sCheckAbilities_ability2].name);
+            if (sCheckAbilities_currentSlot == 2)
+                StringAppend(messageBuffer, sActive);
+            ClearBottomWindow();
+            PrintMessageFromBuffer(messageBuffer);
+            sStorage->state++;
+        }
+        break;
+    case 4:
+        if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+        {
+            ClearBottomWindow();
+            SetPokeStorageTask(Task_PokeStorageMain);
+        }
+        break;
+    }
+}
+
 static void Task_GiveItemFromBag(u8 taskId)
 {
     switch (sStorage->state)
@@ -3823,6 +3967,11 @@ static void Task_ChangeScreen(u8 taskId)
     case SCREEN_CHANGE_ITEM_FROM_BAG:
         FreePokeStorageData();
         GoToBagMenu(ITEMMENULOCATION_PCBOX, 0, CB2_ReturnToPokeStorage);
+        break;
+    case SCREEN_CHANGE_RELEARN:
+        SetMainCallback2(CB2_PrepareRelearnerFromPC);
+        FreePokeStorageData();
+        TeachMoveRelearnerMove();
         break;
     }
 
@@ -4375,6 +4524,16 @@ static void PrintMessage(u8 id)
     DynamicPlaceholderTextUtil_ExpandPlaceholders(sStorage->messageText, sMessages[id].text);
     FillWindowPixelBuffer(WIN_MESSAGE, PIXEL_FILL(1));
     AddTextPrinterParameterized(WIN_MESSAGE, FONT_NORMAL, sStorage->messageText, 0, 1, TEXT_SKIP_DRAW, NULL);
+    DrawTextBorderOuter(WIN_MESSAGE, 2, 14);
+    PutWindowTilemap(WIN_MESSAGE);
+    CopyWindowToVram(WIN_MESSAGE, COPYWIN_GFX);
+    ScheduleBgCopyTilemapToVram(0);
+}
+
+static void PrintMessageFromBuffer(const u8 *str)
+{
+    FillWindowPixelBuffer(WIN_MESSAGE, PIXEL_FILL(1));
+    AddTextPrinterParameterized(WIN_MESSAGE, FONT_NORMAL, str, 0, 1, TEXT_SKIP_DRAW, NULL);
     DrawTextBorderOuter(WIN_MESSAGE, 2, 14);
     PutWindowTilemap(WIN_MESSAGE);
     CopyWindowToVram(WIN_MESSAGE, COPYWIN_GFX);
@@ -7799,6 +7958,11 @@ static bool8 SetMenuTexts_Mon(void)
     }
 
     SetMenuText(MENU_SUMMARY);
+    if (sCursorArea == CURSOR_AREA_IN_BOX && !sStorage->displayMonIsEgg && sStorage->displayMonSpecies != SPECIES_NONE)
+    {
+        SetMenuText(MENU_RELEARN);
+        SetMenuText(MENU_CHECK_ABILITIES);
+    }
     if (sStorage->boxOption == OPTION_MOVE_MONS)
     {
         if (sCursorArea == CURSOR_AREA_IN_BOX)
@@ -8093,6 +8257,8 @@ static const u8 *const sMenuTexts[] =
     [MENU_SWITCH]     = COMPOUND_STRING("Switch"),
     [MENU_BAG]        = COMPOUND_STRING("Bag"),
     [MENU_INFO]       = COMPOUND_STRING("Info"),
+    [MENU_RELEARN]    = COMPOUND_STRING("Relearn"),
+    [MENU_CHECK_ABILITIES] = COMPOUND_STRING("Check Abilities"),
     [MENU_SCENERY_1]  = COMPOUND_STRING("Scenery 1"),
     [MENU_SCENERY_2]  = COMPOUND_STRING("Scenery 2"),
     [MENU_SCENERY_3]  = COMPOUND_STRING("Scenery 3"),

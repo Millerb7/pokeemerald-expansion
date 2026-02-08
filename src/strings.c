@@ -1606,6 +1606,7 @@ const u8 gText_BasePointsResetToZero[] = _("{STR_VAR_1}'s base points\nwere all 
 const u8 gText_Fertilize[] = _("FERTILIZE");
 const u8 gText_PlantBerry[] = _("PLANT BERRY");
 const u8 gText_Relearn_Menu[] = _("Relearn");
+const u8 gText_CheckAbilities[] = _("Check Abilities");
 const u8 gText_LvlUpMoves_Menu[] = _("LvlUp Moves");
 const u8 gText_EggMoves_Menu[] = _("Egg Moves");
 const u8 gText_Nickname[] = _("Nickname");

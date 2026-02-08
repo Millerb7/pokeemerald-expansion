@@ -123,6 +123,7 @@ enum {
     MENU_INFLICT_FREEZE_FROSTBITE,
     MENU_INFLICT_PARALYSIS,
     // End hexorb Branch
+    MENU_CHECK_ABILITIES,
     MENU_FIELD_MOVES
 };
 
@@ -491,6 +492,8 @@ static void BlitBitmapToPartyWindow_LeftColumn(u8, u8, u8, u8, u8, u8);
 static void BlitBitmapToPartyWindow_RightColumn(u8, u8, u8, u8, u8, u8);
 static void BlitBitmapToPartyWindow_Equal(u8, u8, u8, u8, u8, u8); //Custom party menu
 static void CursorCb_Summary(u8);
+static void CursorCb_CheckAbilities(u8);
+static void Task_CheckAbilitiesWaitButton(u8);
 static void CursorCb_RelearnBoth(u8);
 static void CursorCb_RelearnLvlUp(u8);
 static void CursorCb_RelearnEgg(u8);
@@ -2997,6 +3000,8 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
 
     sPartyMenuInternal->numActions = 0;
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_SUMMARY);
+    if (!GetMonData(&mons[slotId], MON_DATA_IS_EGG))
+        AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_CHECK_ABILITIES);
 
     // If Mon can learn Fly and action list consists of < 4 moves, add FLY to action list
     if (sPartyMenuInternal->numActions < 5 && (CanTeachMove(&mons[slotId], MOVE_FLY) != 1) && CheckBagHasItem(ITEM_HM02, 1)) 
@@ -3215,6 +3220,67 @@ static void CursorCb_Summary(u8 taskId)
     PlaySE(SE_SELECT);
     sPartyMenuInternal->exitCallback = CB2_ShowPokemonSummaryScreen;
     Task_ClosePartyMenu(taskId);
+}
+
+static void Task_CheckAbilitiesWaitButton(u8 taskId)
+{
+    if (gTasks[taskId].data[0] == 0)
+    {
+        if (!IsPartyMenuTextPrinterActive())
+            gTasks[taskId].data[0]++;
+    }
+    else
+    {
+        if (JOY_NEW(A_BUTTON))
+        {
+            PlaySE(SE_SELECT);
+            PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[1]);
+            CreateSelectionWindow(taskId);
+            gTasks[taskId].data[0] = 0xFF;
+            gTasks[taskId].func = Task_HandleSelectionMenuInput;
+        }
+    }
+}
+
+static void CursorCb_CheckAbilities(u8 taskId)
+{
+    static const u8 sAbilitiesHeader[] = _("'s abilities:\nSlot 1: ");
+    static const u8 sSlot2[] = _("\nSlot 2: ");
+    static const u8 sSlot3[] = _("\nSlot 3: ");
+    static const u8 sActive[] = _(" active");
+    struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
+    u32 slots;
+    u32 currentSlotVal;
+    u8 currentSlot;
+    u16 species;
+    u16 ability0, ability1, ability2;
+
+    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+    slots = GetMonData(mon, MON_DATA_ABILITY_SLOTS, NULL);
+    currentSlotVal = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
+    currentSlot = (u8)currentSlotVal;
+    ability0 = (slots != 0) ? GetAbilityFromSlots(slots, 0) : GetAbilityBySpecies(species, 0, FALSE);
+    ability1 = (slots != 0) ? GetAbilityFromSlots(slots, 1) : GetAbilityBySpecies(species, 1, FALSE);
+    ability2 = (slots != 0) ? GetAbilityFromSlots(slots, 2) : GetAbilityBySpecies(species, 2, FALSE);
+
+    GetMonNickname(mon, gStringVar4);
+    StringAppend(gStringVar4, sAbilitiesHeader);
+    StringAppend(gStringVar4, gAbilitiesInfo[ability0].name);
+    if (currentSlot == 0)
+        StringAppend(gStringVar4, sActive);
+    StringAppend(gStringVar4, sSlot2);
+    StringAppend(gStringVar4, gAbilitiesInfo[ability1].name);
+    if (currentSlot == 1)
+        StringAppend(gStringVar4, sActive);
+    StringAppend(gStringVar4, sSlot3);
+    StringAppend(gStringVar4, gAbilitiesInfo[ability2].name);
+    if (currentSlot == 2)
+        StringAppend(gStringVar4, sActive);
+
+    DisplayPartyMenuMessage(gStringVar4, TRUE);
+    ScheduleBgCopyTilemapToVram(2);
+    gTasks[taskId].data[0] = 0;
+    gTasks[taskId].func = Task_CheckAbilitiesWaitButton;
 }
 
 static void CursorCb_RelearnBoth(u8 taskId)

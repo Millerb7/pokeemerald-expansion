@@ -23,6 +23,8 @@
 #define ITEM3_POISON            0x10
 #define ITEM3_SLEEP             0x20
 #define ITEM3_LEVEL_UP          0x40
+#define ITEM3_CHANGE_ABILITY    0x40
+#define ITEM3_CHANGE_TestABILITY    0x40
 #define ITEM3_GUARD_SPEC        0x80 // Works the same way as the move Mist.
 
 #define ITEM3_STATUS_ALL        (ITEM3_CONFUSION | ITEM3_PARALYSIS | ITEM3_FREEZE | ITEM3_BURN | ITEM3_POISON | ITEM3_SLEEP)

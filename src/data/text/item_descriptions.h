@@ -4677,6 +4677,15 @@ static const u8 sNatureSwapDesc[] = _(
     "changes your mon's nature\n"
     "esketit.");
 
+static const u8 sAbilityShardDesc[] = _(
+    "The Ability Shard\n"
+    "rerolls all ability slots\n"
+    "esketit.");
+
+static const u8 sTestAbilityShardDesc[] = _(
+    "The Test Ability Swap\n"
+    "rerolls all ability slots\n"
+    "esketit.");
 
 static const u8 sInfiniteCandyDesc[] = _(
     "An ultra rare\n"

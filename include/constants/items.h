@@ -1166,8 +1166,10 @@
 #define ITEM_STEEL_FEATHER 1000
 #define ITEM_HEX_ORB 1001 //hexorb Branch
 #define ITEM_NATURE_SWAP 1002
+#define ITEM_ABILITY_SHARD 1003
+#define ITEM_TEST_ABILITY_SHARD 1004
 
-#define ITEMS_COUNT 1003
+#define ITEMS_COUNT 1005
 #define ITEM_FIELD_ARROW ITEMS_COUNT
 
 // A special item id associated with "Cancel"/"Exit" etc. in a list of items or decorations

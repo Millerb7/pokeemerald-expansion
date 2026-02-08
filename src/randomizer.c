@@ -1203,6 +1203,27 @@ static bool8 GetForcedAbilityForSpecies(u16 species, u16 *outAbility)
             *outAbility = ABILITY_GULP_MISSILE;
             return TRUE;
 
+        case SPECIES_ARCEUS_NORMAL:
+        case SPECIES_ARCEUS_FIGHTING:
+        case SPECIES_ARCEUS_FLYING:
+        case SPECIES_ARCEUS_POISON:
+        case SPECIES_ARCEUS_GROUND:
+        case SPECIES_ARCEUS_ROCK:
+        case SPECIES_ARCEUS_BUG:
+        case SPECIES_ARCEUS_GHOST:
+        case SPECIES_ARCEUS_STEEL:
+        case SPECIES_ARCEUS_FIRE:
+        case SPECIES_ARCEUS_WATER:
+        case SPECIES_ARCEUS_GRASS:
+        case SPECIES_ARCEUS_ELECTRIC:
+        case SPECIES_ARCEUS_PSYCHIC:
+        case SPECIES_ARCEUS_ICE:
+        case SPECIES_ARCEUS_DRAGON:
+        case SPECIES_ARCEUS_DARK:
+        case SPECIES_ARCEUS_FAIRY:
+            *outAbility = ABILITY_MULTITYPE;
+            return TRUE;
+
         default:
             return FALSE;
     }

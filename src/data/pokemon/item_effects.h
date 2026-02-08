@@ -329,6 +329,16 @@ const u8 gItemEffect_RareCandy[10] = {
     VITAMIN_FRIENDSHIP_CHANGE(7),
 };
 
+const u8 gItemEffect_AbilityShard[10] =
+{
+    [3] = ITEM3_CHANGE_ABILITY,
+};
+
+const u8 gItemEffect_TestAbilityShard[10] =
+{
+    [3] = ITEM3_CHANGE_TestABILITY,
+};
+
 const u8 gItemEffect_PPUp[9] = {
     [4] = ITEM4_PP_UP,
     [5] = ITEM5_FRIENDSHIP_ALL,

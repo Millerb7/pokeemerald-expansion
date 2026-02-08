@@ -32,13 +32,62 @@ InsideOfTruck_EventScript_SetIntroFlagsMale::
 	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F_POKE_BALL
 	setvar VAR_LITTLEROOT_HOUSES_STATE_BRENDAN, 1
 	setdynamicwarp MAP_LITTLEROOT_TOWN, 3, 10
+	msgbox InsideOfTruck_Text_SkipIntro, MSGBOX_YESNO
+	compare VAR_RESULT, YES
+	goto_if_eq InsideOfTruck_EventScript_SkipIntroMale
+	msgbox InsideOfTruck_Text_QuickStart, MSGBOX_YESNO
+	compare VAR_RESULT, YES
+	goto_if_eq InsideOfTruck_EventScript_QuickStartChooseMode
 	message InsideOfTruck_Text_ReadCarefully
 	waitmessage
 	delay 100
 	delay 100
 	msgbox InsideOfTruck_Text_WantToUseDefaultSettings, MSGBOX_YESNO
 	call_if_eq VAR_RESULT, YES, InsideOfTruck_EventScript_SetDefaultSettings
+	call_if_eq VAR_RESULT, YES, InsideOfTruck_EventScript_GiveStarterItems
 	call_if_eq VAR_RESULT, NO, InsideOfTruck_EventScript_StartSettingsMenu
+	releaseall
+	end
+
+InsideOfTruck_EventScript_QuickStartChooseMode::
+	msgbox InsideOfTruck_Text_DefaultOrMyMode, MSGBOX_YESNO
+	compare VAR_RESULT, YES
+	goto_if_eq InsideOfTruck_EventScript_QuickStartDefaults
+	call InsideOfTruck_EventScript_SetMyModeSettings
+	call InsideOfTruck_EventScript_GiveStarterItems
+	releaseall
+	end
+
+InsideOfTruck_EventScript_QuickStartDefaults::
+	call InsideOfTruck_EventScript_SetDefaultSettings
+	call InsideOfTruck_EventScript_GiveStarterItems
+	releaseall
+	end
+
+InsideOfTruck_EventScript_SkipIntroMale::
+	setvar VAR_LITTLEROOT_INTRO_STATE, 7
+	goto InsideOfTruck_EventScript_SkipIntroCommon
+
+InsideOfTruck_EventScript_SkipIntroFemale::
+	setvar VAR_LITTLEROOT_INTRO_STATE, 7
+	goto InsideOfTruck_EventScript_SkipIntroCommon
+
+InsideOfTruck_EventScript_SkipIntroCommon::
+	setflag FLAG_EZ_CATCH
+	setflag FLAG_SHINY_STARTERS
+	clearflag FLAG_HIDE_LITTLEROOT_TOWN_BIRCHS_LAB_BIRCH
+	clearflag FLAG_HIDE_LITTLEROOT_TOWN_BIRCH
+	setflag FLAG_RESCUED_BIRCH
+	setvar VAR_GAME_SETTING_DIFFICULTY_MODE, GAME_SETTING_DIFFICULTY_EASY_MODE
+	setflag FLAG_MIN_GRINDING_MODE
+	setflag FLAG_RANDOMIZER_ENABLED
+	setflag FLAG_RANDOM_ABILITIES_ENABLED
+	special ForceBattleStyleSetPleaseGod
+	setvar VAR_RANDOMIZER_MODE, MON_RANDOM
+	call InsideOfTruck_EventScript_GiveStarterItems
+	msgbox InsideOfTruck_Text_SkipIntroDone, MSGBOX_DEFAULT
+	warpsilent MAP_NEW_BIRCHS_LAB, 6, 6
+	waitstate
 	releaseall
 	end
 
@@ -52,12 +101,19 @@ InsideOfTruck_EventScript_SetIntroFlagsFemale::
 	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_2F_POKE_BALL
 	setvar VAR_LITTLEROOT_HOUSES_STATE_MAY, 1
 	setdynamicwarp MAP_LITTLEROOT_TOWN, 12, 10
+	msgbox InsideOfTruck_Text_SkipIntro, MSGBOX_YESNO
+	compare VAR_RESULT, YES
+	goto_if_eq InsideOfTruck_EventScript_SkipIntroFemale
+	msgbox InsideOfTruck_Text_QuickStart, MSGBOX_YESNO
+	compare VAR_RESULT, YES
+	goto_if_eq InsideOfTruck_EventScript_QuickStartChooseMode
 	message InsideOfTruck_Text_ReadCarefully
 	waitmessage
 	delay 100
 	delay 100
 	msgbox InsideOfTruck_Text_WantToUseDefaultSettings, MSGBOX_YESNO
 	call_if_eq VAR_RESULT, YES, InsideOfTruck_EventScript_SetDefaultSettings
+	call_if_eq VAR_RESULT, YES, InsideOfTruck_EventScript_GiveStarterItems
 	call_if_eq VAR_RESULT, NO, InsideOfTruck_EventScript_StartSettingsMenu
 	releaseall
 	end
@@ -73,6 +129,23 @@ InsideOfTruck_EventScript_SetDefaultSettings:
 	setvar VAR_RANDOMIZER_MODE, MAX_MON_MODE
 	return
 
+InsideOfTruck_EventScript_GiveStarterItems::
+	giveitem ITEM_TM27, 1
+	giveitem ITEM_ABILITY_CAPSULE, 5
+	return
+
+InsideOfTruck_EventScript_SetMyModeSettings:
+	setflag FLAG_EZ_CATCH
+	setflag FLAG_SHINY_STARTERS
+	msgbox InsideOfTruck_Text_MyModeSettingsSaved, MSGBOX_DEFAULT
+	setvar VAR_GAME_SETTING_DIFFICULTY_MODE, GAME_SETTING_DIFFICULTY_EASY_MODE
+	setflag FLAG_MIN_GRINDING_MODE
+	setflag FLAG_RANDOMIZER_ENABLED
+	setflag FLAG_RANDOM_ABILITIES_ENABLED
+	special ForceBattleStyleSetPleaseGod
+	setvar VAR_RANDOMIZER_MODE, MON_RANDOM
+	return
+
 InsideOfTruck_EventScript_MovingBox::
 	msgbox InsideOfTruck_Text_BoxPrintedWithMonLogo, MSGBOX_SIGN
 	end
@@ -81,6 +154,28 @@ InsideOfTruck_Text_BoxPrintedWithMonLogo:
 	.string "The box is printed with a Pokémon logo.\p"
 	.string "It's a Pokémon brand moving and\n"
 	.string "delivery service.$"
+
+InsideOfTruck_Text_SkipIntro:
+	.string "Skip entire intro?\p"
+	.string "Spawn at Prof. Birch's lab to choose\n"
+	.string "your starter. EZ Catch and Shiny\n"
+	.string "Starters will be enabled.$"
+
+InsideOfTruck_Text_SkipIntroDone:
+	.string "Intro skipped. EZ Catch and Shiny\n"
+	.string "Starters enabled. Choose your starter!$"
+
+InsideOfTruck_Text_QuickStart:
+	.string "Quick start? (Skips the intro message.)$"
+
+InsideOfTruck_Text_DefaultOrMyMode:
+	.string "Default settings (Yes) or My mode (No)?\p"
+	.string "My mode: Easy, Min Grinding,\n"
+	.string "Random Abilities, normal species.$"
+
+InsideOfTruck_Text_MyModeSettingsSaved:
+	.string "My mode settings saved.\n"
+	.string "Good luck!$"
 
 InsideOfTruck_Text_ReadCarefully:
 	.string "{COLOR RED}{SHADOW LIGHT_RED}Please take a moment to read the\n"
@@ -372,10 +467,12 @@ script InsideOfTruck_EventScript_RandomzierOptions {
 }
 
 
+// MAX_MON_MODE = no species randomizer (normal species). MON_RANDOM/BST/LEGEND_AWARE = randomizer ON (set FLAG_RANDOMIZER_ENABLED + VAR).
 script InsideOfTruck_EventScript_SpeciesRandomizerOptions {
 	msgbox(WhichSpeciesRandomizerOption)
 	if(!flag(FLAG_RANDOMIZER_ENABLED))
 	{
+		dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Off (normal species)", MAX_MON_MODE)
 		dynmultipush("Normal species", MON_RANDOM)
 		dynmultipush("Scaled species", MON_RANDOM_BST)
 		dynmultipush("Legendary-aware species", MON_RANDOM_LEGEND_AWARE)
@@ -386,30 +483,29 @@ script InsideOfTruck_EventScript_SpeciesRandomizerOptions {
 		switch(var(VAR_RANDOMIZER_MODE))
 		{
 			case MON_RANDOM:
+				dynmultipush("Off (normal species)", MAX_MON_MODE)
 				dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Normal species", MON_RANDOM)
 				dynmultipush("Scaled species", MON_RANDOM_BST)
 				dynmultipush("Legendary-aware species", MON_RANDOM_LEGEND_AWARE)
 				dynmultipush("Done", MULTI_B_PRESSED)
 
 			case MON_RANDOM_BST:
+				dynmultipush("Off (normal species)", MAX_MON_MODE)
 				dynmultipush("Normal species", MON_RANDOM)
 				dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Scaled species", MON_RANDOM_BST)
 				dynmultipush("Legendary-aware species", MON_RANDOM_LEGEND_AWARE)
 				dynmultipush("Done", MULTI_B_PRESSED)
 
 			case MON_RANDOM_LEGEND_AWARE:
+				dynmultipush("Off (normal species)", MAX_MON_MODE)
 				dynmultipush("Normal species", MON_RANDOM)
 				dynmultipush("Scaled species", MON_RANDOM_BST)
 				dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Legendary-aware species", MON_RANDOM_LEGEND_AWARE)
 				dynmultipush("Done", MULTI_B_PRESSED)
 
 			case MAX_MON_MODE:
-				dynmultipush("Normal species", MON_RANDOM)
-				dynmultipush("Scaled species", MON_RANDOM_BST)
-				dynmultipush("Legendary-aware species", MON_RANDOM_LEGEND_AWARE)
-				dynmultipush("Done", MULTI_B_PRESSED)
-			
 			default:
+				dynmultipush("{COLOR GREEN}{SHADOW LIGHT_GREEN}Off (normal species)", MAX_MON_MODE)
 				dynmultipush("Normal species", MON_RANDOM)
 				dynmultipush("Scaled species", MON_RANDOM_BST)
 				dynmultipush("Legendary-aware species", MON_RANDOM_LEGEND_AWARE)
@@ -426,6 +522,24 @@ script InsideOfTruck_EventScript_SpeciesRandomizerOptions {
 	if (var(VAR_RESULT) == MULTI_B_PRESSED) 
 	{
 		goto(InsideOfTruck_EventScript_RandomzierOptions)
+	}
+
+	// Off (normal species) = no randomizer
+	if(var(VAR_RESULT) == MAX_MON_MODE)
+	{
+		if(!flag(FLAG_RANDOMIZER_ENABLED))
+		{
+			msgbox(SpeciesRandomizerAlreadyOff)
+			goto(InsideOfTruck_EventScript_SpeciesRandomizerOptions)
+		}
+		msgbox(SpeciesRandomizerTurnOffYesNo, MSGBOX_YESNO)
+		if(var(VAR_RESULT) == YES)
+		{
+			clearflag(FLAG_RANDOMIZER_ENABLED)
+			setvar(VAR_RANDOMIZER_MODE, MAX_MON_MODE)
+			msgbox(NormalSpeciesRandomizerDisabled)
+		}
+		goto(InsideOfTruck_EventScript_SpeciesRandomizerOptions)
 	}
 
 	if(var(VAR_RESULT) == MON_RANDOM) 
@@ -509,6 +623,7 @@ script InsideOfTruck_EventScript_SpeciesRandomizerOptions {
 script InsideOfTruck_EventScript_SaveSettingsDone {
 	special(ForceBattleStyleSetPleaseGod)
 	msgbox(CustomSettingsSaved)
+	call(InsideOfTruck_EventScript_GiveStarterItems)
 	releaseall
 	end
 }
@@ -750,6 +865,17 @@ text NormalSpeciesRandomizerDisabled
 	"{COLOR RED}{SHADOW LIGHT_RED}Species Randomizer disabled."
 }
 
+text SpeciesRandomizerAlreadyOff
+{
+	"Species Randomizer is already off.\n"
+	"(Normal species - no randomization.)"
+}
+
+text SpeciesRandomizerTurnOffYesNo
+{
+	"Turn off Species Randomizer?\n"
+	"(Back to normal species.)"
+}
 
 text ScaledSpeciesRandomizerAlreadyOnYesNo
 {

@@ -4084,6 +4084,12 @@ const u32 sExpCandyExperienceTable[] = {
     [EXP_30000 - 1] = 30000,
 };
 
+static bool8 TryRerollAbilityFromWhitelist(struct Pokemon *mon)
+{
+
+    return TRUE;
+}
+
 // Returns TRUE if the item has no effect on the Pokémon, FALSE otherwise
 bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 moveIndex, bool8 usedByAI)
 {
@@ -4185,6 +4191,19 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                     retVal = FALSE;
                 }
             }
+
+            // NEW: Ability Shard 
+            // if (itemEffect[i] & ITEM3_CHANGE_ABILITY)
+            // {
+            //     if (ApplyAbilityShard(mon, item))
+            //         retVal = FALSE;
+            // }
+
+            // if (itemEffect[i] & ITEM3_CHANGE_TestABILITY)
+            // {
+            //     if (ApplyAbilityShard(mon, item))
+            //         retVal = FALSE;
+            // }
 
             // Cure status
             if ((itemEffect[i] & ITEM3_SLEEP) && HealStatusConditions(mon, STATUS1_SLEEP, battlerId) == 0)

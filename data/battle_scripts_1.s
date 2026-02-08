@@ -8697,12 +8697,12 @@ BattleScript_DancerActivates::
 	jumptocalledmove TRUE
 
 BattleScript_AmbushActivates::
-    call BattleScript_AbilityPopUp
-    waitmessage B_WAIT_TIME_SHORT
-    setbyte sB_ANIM_TURN, 0
-    setbyte sB_ANIM_TARGETS_HIT, 0
-    orword gHitMarker, HITMARKER_ALLOW_NO_PP
-    jumptocalledmove TRUE
+	call BattleScript_AbilityPopUp
+	waitmessage B_WAIT_TIME_SHORT
+	setbyte sB_ANIM_TURN, 0
+	setbyte sB_ANIM_TARGETS_HIT, 0
+	orword gHitMarker, HITMARKER_ALLOW_NO_PP
+	jumptocalledmove TRUE
 
 BattleScript_SynchronizeActivates::
 	waitstate

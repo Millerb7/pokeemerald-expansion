@@ -282,6 +282,17 @@ void ItemUseCB_NatureSwap(u8 taskId)
     DestroyTask(taskId);
 }
 
+void ItemUseOutOfBattle_AbilityShard(u8 taskId)
+{
+    LockPlayerFieldControls();
+    DestroyTask(taskId);
+}
+
+void ItemUseOutOfBattle_TestAbilityShard(u8 taskId)
+{
+    LockPlayerFieldControls();
+    DestroyTask(taskId);
+}
 
 void ItemUseOutOfBattle_Bike(u8 taskId)
 {

@@ -338,7 +338,7 @@ static const u16 sRandomizerAbilityWhitelist[] =
     ABILITY_FAST_START,
     ABILITY_MIND_OVER_MATTER,
     ABILITY_FORTIFY,
-    ABILITY_AMBUSH
+    //ABILITY_AMBUSH
 };
 
 #define ABILITY_WHITELIST_SIZE     (NELEMS(sRandomizerAbilityWhitelist))

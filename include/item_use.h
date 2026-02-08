@@ -46,6 +46,8 @@ void ItemUseOutOfBattle_PokeVial(u8);
 void ItemUseCB_PokeVial(u8);
 void ItemUseOutOfBattle_NatureSwap(u8);
 void ItemUseCB_NatureSwap(u8);
+void ItemUseOutOfBattle_AbilityShard(u8);
+void ItemUseOutOfBattle_TestAbilityShard(u8);
 void ItemUseOutOfBattle_InfiniteRepel(u8);
 void ItemUseInBattle_BagMenu(u8 taskId);
 void ItemUseInBattle_PartyMenu(u8 taskId);

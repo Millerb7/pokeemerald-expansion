@@ -2612,7 +2612,7 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
     [ABILITY_AMBUSH] =
     {
         .name = _("Ambush"),
-        .description = COMPOUND_STRING("Strikes first on entry with users priority move."),
+        .description = COMPOUND_STRING("Strikes first on switch in,\nwith users priority move."),
         .aiRating = 7,
     },
 

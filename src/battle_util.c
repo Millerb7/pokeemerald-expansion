@@ -4189,26 +4189,27 @@ static u16 GetAmbushPriorityMove(u32 battler)
 
 static u32 GetAmbushTarget(u32 battler)
 {
-    u32 foe1 = BATTLE_OPPOSITE(battler);
-    u32 foe2 = BATTLE_PARTNER(foe1); // the other opponent in doubles
+    u32 i;
+    u32 foeSide = GetBattlerSide(battler) ^ 1;
+    u32 pos = GetBattlerPosition(battler) & 1; // 0 = left, 1 = right
 
-    // Prefer the direct opposite if alive
-    if (IsBattlerAlive(foe1))
-        return foe1;
+    u32 preferred = GetBattlerAtPosition((foeSide == B_SIDE_PLAYER)
+        ? (pos ? B_POSITION_PLAYER_RIGHT : B_POSITION_PLAYER_LEFT)
+        : (pos ? B_POSITION_OPPONENT_RIGHT : B_POSITION_OPPONENT_LEFT));
 
-    // Otherwise use the other foe if alive
-    if (IsBattlerAlive(foe2))
-        return foe2;
+    if (preferred < gBattlersCount && IsBattlerAlive(preferred))
+        return preferred;
 
-    return MAX_BATTLERS_COUNT; // invalid
+    for (i = 0; i < gBattlersCount; i++)
+        if (IsBattlerAlive(i) && GetBattlerSide(i) == foeSide)
+            return i;
+
+    return gBattlersCount;
 }
 
 static bool32 TryDoAmbushAfterSwitchIn(u32 battler)
 {
     u32 target;
-
-    if (gDisableStructs[battler].isFirstTurn == 2)
-        return;
 
     if (GetBattlerAbility(battler) != ABILITY_AMBUSH)
         return FALSE;
@@ -4228,23 +4229,27 @@ static bool32 TryDoAmbushAfterSwitchIn(u32 battler)
     if (target >= gBattlersCount || !IsBattlerAlive(target))
         return FALSE;
 
-    // IMPORTANT: don't leave global "ability pop-up" state dirty
-    gBattlerAbility = battler;
+    gBattleStruct->atkCancellerTracker = 0;
 
     gBattlerAttacker = battler;
+    gBattlerAbility = battler;
     gBattlerTarget = target;
+    gLastUsedAbility = ABILITY_AMBUSH;
+
+    gBattleScripting.battler = battler;
 
     gCalledMove = gBattleStruct->ambushMove[battler];
     gCurrentMove = gCalledMove;
     gBattleStruct->ambushMove[battler] = MOVE_NONE;
 
+    gHitMarker &= ~HITMARKER_NO_ATTACKSTRING;
+    gHitMarker &= ~HITMARKER_ATTACKSTRING_PRINTED;
+
     SetTypeBeforeUsingMove(gCalledMove, battler);
 
-    // Queue script; don't execute immediately
     BattleScriptPushCursorAndCallback(BattleScript_AmbushActivates);
     return TRUE;
 }
-
 
 u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 moveArg)
 {
@@ -4921,6 +4926,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
             u16 ambushMove = GetAmbushPriorityMove(battler);
 
             if (!gSpecialStatuses[battler].switchInAbilityDone
+                && gDisableStructs[battler].isFirstTurn == 2
                 && ambushMove != MOVE_NONE)
             {
                 gSpecialStatuses[battler].switchInAbilityDone = TRUE;

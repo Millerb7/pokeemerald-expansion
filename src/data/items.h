@@ -15536,7 +15536,7 @@ const struct Item gItemsInfo[] =
         .fieldUseFunc = ItemUseOutOfBattle_PokeVial,
         .iconPic = gItemIcon_Flute,
         .iconPalette = gItemIconPalette_BlueFlute,
-    },
+    }, 
 
     [ITEM_NATURE_SWAP] =
     {
@@ -15549,6 +15549,32 @@ const struct Item gItemsInfo[] =
         .fieldUseFunc = ItemUseOutOfBattle_NatureSwap,
         .iconPic = gItemIcon_Flute,
         .iconPalette = gItemIconPalette_BlueFlute,
+    },
+
+    [ITEM_ABILITY_SHARD] =
+    {
+        .name = _("Ability Shard"),
+        .price = 0,
+        .importance = 1,
+        .description = sAbilityShardDesc,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_AbilityShard,
+        .iconPic = gItemIcon_AdamantCrystal,
+        .iconPalette = gItemIconPalette_AdamantCrystal,
+    },
+
+    [ITEM_TEST_ABILITY_SHARD] =
+    {
+        .name = _("Test Ability Shard"),
+        .price = 0,
+        .importance = 1,
+        .description = sTestAbilityShardDesc,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_TestAbilityShard,
+        .iconPic = gItemIcon_AdamantCrystal,
+        .iconPalette = gItemIconPalette_AdamantCrystal,
     },
 
     [ITEM_INFINITE_CANDY] =

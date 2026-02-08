@@ -810,6 +810,17 @@ static void ZeroAbilityOverrideForOldSaveFormat(void)
             gPokemonStoragePtr->boxes[box][slot].abilityOverride = 0;
 }
 
+// When loading a save from before abilitySlots was added, zero it so abilityOverride/species lookup is used.
+static void ZeroAbilitySlotsForOldSaveFormat(void)
+{
+    u32 i, box, slot;
+    for (i = 0; i < PARTY_SIZE; i++)
+        gSaveBlock1Ptr->playerParty[i].box.abilitySlots = 0;
+    for (box = 0; box < TOTAL_BOXES_COUNT; box++)
+        for (slot = 0; slot < IN_BOX_COUNT; slot++)
+            gPokemonStoragePtr->boxes[box][slot].abilitySlots = 0;
+}
+
 u8 LoadGameSave(u8 saveType)
 {
     u8 status;
@@ -829,6 +840,8 @@ u8 LoadGameSave(u8 saveType)
         CopyPartyAndObjectsFromSave();
         if (status == SAVE_STATUS_OK && gSaveBlock2Ptr->saveFormatVersion < SAVE_FORMAT_VERSION_ABILITY_OVERRIDE)
             ZeroAbilityOverrideForOldSaveFormat();
+        if (status == SAVE_STATUS_OK && gSaveBlock2Ptr->saveFormatVersion < SAVE_FORMAT_VERSION_ABILITY_SLOTS)
+            ZeroAbilitySlotsForOldSaveFormat();
         gSaveFileStatus = status;
         gGameContinueCallback = 0;
         break;

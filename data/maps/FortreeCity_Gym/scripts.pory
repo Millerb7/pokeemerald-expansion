@@ -69,6 +69,7 @@ FortreeCity_Gym_EventScript_WinonaDefeated::
 	end
 
 FortreeCity_Gym_EventScript_GiveAerialAce2::
+	giveitem ITEM_ABILITY_SHARD, 1
 	giveitem ITEM_TM_BRAVE_BIRD
 	giveitem ITEM_TM_ACROBATICS
 	giveitem ITEM_TM_HURRICANE
@@ -81,6 +82,7 @@ FortreeCity_Gym_EventScript_GiveAerialAce2::
 	end
 
 FortreeCity_Gym_EventScript_GiveAerialAce::
+	giveitem ITEM_ABILITY_SHARD, 1
 	giveitem ITEM_TM_BRAVE_BIRD
 	giveitem ITEM_TM_ACROBATICS
 	giveitem ITEM_TM_HURRICANE

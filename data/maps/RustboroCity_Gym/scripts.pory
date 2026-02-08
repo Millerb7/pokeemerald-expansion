@@ -28,6 +28,7 @@ RustboroCity_Gym_EventScript_RoxanneDefeated::
 
 RustboroCity_Gym_EventScript_GiveBulldoze::
 	giveitem ITEM_TM_BULLDOZE
+	giveitem ITEM_ABILITY_SHARD, 1
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	setflag FLAG_RECEIVED_TM_BULLDOZE
 	msgbox RustboroCity_Gym_Text_ExplainBulldoze, MSGBOX_DEFAULT

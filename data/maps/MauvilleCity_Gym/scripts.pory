@@ -123,6 +123,7 @@ MauvilleCity_Gym_EventScript_WattsonDefeated::
 
 MauvilleCity_Gym_EventScript_GiveVoltSwitch2::
 	giveitem ITEM_TM_VOLT_SWITCH
+	giveitem ITEM_ABILITY_SHARD, 1
 	giveitem ITEM_LUXRITE
 	giveitem ITEM_MANECTITE
 	giveitem ITEM_AMPHAROSITE
@@ -133,6 +134,7 @@ MauvilleCity_Gym_EventScript_GiveVoltSwitch2::
 
 MauvilleCity_Gym_EventScript_GiveVoltSwitch::
 	giveitem ITEM_TM_VOLT_SWITCH
+	giveitem ITEM_ABILITY_SHARD, 1
 	giveitem ITEM_LUXRITE
 	giveitem ITEM_MANECTITE
 	giveitem ITEM_AMPHAROSITE

@@ -67,6 +67,7 @@ enum {
     MON_DATA_IS_EGG,
     MON_DATA_ABILITY_NUM,
     MON_DATA_ABILITY,
+    MON_DATA_ABILITY_SLOTS,
     MON_DATA_TOUGH,
     MON_DATA_SHEEN,
     MON_DATA_OT_GENDER,
@@ -274,6 +275,7 @@ struct BoxPokemon
         union PokemonSubstruct substructs[4];
     } secure;
     u16 abilityOverride; // Resolved ability ID; 0 = use slot-based lookup (backward compat)
+    u32 abilitySlots;    // Bit-packed: 9 bits per slot (0-2), 2 bits currentSlot, 1 bit cantRandomize (bits 27-29)
 };
 
 struct Pokemon
@@ -826,6 +828,11 @@ u8 GetMonsStateToDoubles(void);
 u8 GetMonsStateToDoubles_2(void);
 u16 GetAbilityBySpecies(u16 species, u8 abilityNum, u8 cantRandomizeAbility);
 u16 GetMonAbility(struct Pokemon *mon);
+// abilitySlots bit-packed helpers (9 bits per slot, 2 bits currentSlot at 27)
+u16 GetAbilityFromSlots(u32 packed, u8 slot);
+void SetAbilityInSlots(u32 *packed, u8 slot, u16 ability);
+u8 GetCurrentSlotFromSlots(u32 packed);
+void SetCurrentSlotInSlots(u32 *packed, u8 slot);
 void CreateSecretBaseEnemyParty(struct SecretBase *secretBaseRecord);
 u8 GetSecretBaseTrainerPicIndex(void);
 u8 GetSecretBaseTrainerClass(void);

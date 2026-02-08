@@ -1162,9 +1162,13 @@ static void CreateDexNavWildMon(u16 species, u8 potential, u8 level, u8 abilityN
     }
     
     
-    //Set ability
+    //Set ability (slot and explicit override so GetMonAbility is correct)
     SetMonData(mon, MON_DATA_ABILITY_NUM, &abilityNum);
-    
+    {
+        u16 abilityId = GetAbilityBySpecies(species, abilityNum, FALSE);
+        SetMonData(mon, MON_DATA_ABILITY, &abilityId);
+    }
+
     // Set Held Item
     if (item)
         SetMonData(mon, MON_DATA_HELD_ITEM, &item);

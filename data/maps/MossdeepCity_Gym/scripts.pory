@@ -101,6 +101,7 @@ MossdeepCity_Gym_EventScript_TateAndLizaDefeated::
 	end
 
 MossdeepCity_Gym_EventScript_GiveCalmMind2::
+	giveitem ITEM_ABILITY_SHARD, 1
 	giveitem ITEM_TM_EXPANDING_FORCE
 	giveitem ITEM_TM_TRICK_ROOM
 	msgbox MossdeepCity_Gym_Text_ExplainCalmMind, MSGBOX_DEFAULT
@@ -109,6 +110,7 @@ MossdeepCity_Gym_EventScript_GiveCalmMind2::
 	end
 
 MossdeepCity_Gym_EventScript_GiveCalmMind::
+	giveitem ITEM_ABILITY_SHARD, 1
 	giveitem ITEM_TM_EXPANDING_FORCE
 	giveitem ITEM_TM_TRICK_ROOM
 	msgbox MossdeepCity_Gym_Text_ExplainCalmMind, MSGBOX_DEFAULT

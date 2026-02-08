@@ -13,10 +13,11 @@
 // If the sector's signature field is not this value then the sector is either invalid or empty.
 #define SECTOR_SIGNATURE 0x8012025
 
-// Save format version (SaveBlock2.saveFormatVersion). Bump when layout changes (e.g. BoxPokemon.abilityOverride).
+// Save format version (SaveBlock2.saveFormatVersion). Bump when layout changes (e.g. BoxPokemon.abilitySlots).
 #define SAVE_FORMAT_VERSION_INITIAL  0
 #define SAVE_FORMAT_VERSION_ABILITY_OVERRIDE 1
-#define SAVE_FORMAT_VERSION_CURRENT   SAVE_FORMAT_VERSION_ABILITY_OVERRIDE
+#define SAVE_FORMAT_VERSION_ABILITY_SLOTS    2
+#define SAVE_FORMAT_VERSION_CURRENT   SAVE_FORMAT_VERSION_ABILITY_SLOTS
 
 #define SPECIAL_SECTOR_SENTINEL 0xB39D
 

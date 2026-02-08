@@ -259,8 +259,8 @@ static EWRAM_DATA u16 *sSlot2TilemapBuffer = 0; //
 EWRAM_DATA u8 gSelectedOrderFromParty[MAX_FRONTIER_PARTY_SIZE] = {0};
 static EWRAM_DATA u16 sPartyMenuItemId = 0;
 EWRAM_DATA u8 gBattlePartyCurrentOrder[PARTY_SIZE / 2] = {0}; // bits 0-3 are the current pos of Slot 1, 4-7 are Slot 2, and so on
-static EWRAM_DATA u8 sInitialLevel = 0;
-static EWRAM_DATA u8 sFinalLevel = 0;
+static EWRAM_DATA u8 sInitialLevel __attribute__((unused)) = 0;
+static EWRAM_DATA u8 sFinalLevel __attribute__((unused)) = 0;
 
 // IWRAM common
 COMMON_DATA void (*gItemUseCB)(u8, TaskFunc) = NULL;
@@ -588,7 +588,7 @@ static void InitPartyMenu(u8 menuType, u8 layout, u8 partyAction, bool8 keepCurs
     }
 }
 
-static void RefreshPartyMenu(void) //Refreshes the party menu without restarting tasks
+static void __attribute__((unused)) RefreshPartyMenu(void) //Refreshes the party menu without restarting tasks
 {
     u16 i;
     for (i = 0; i < ARRAY_COUNT(sPartyMenuInternal->data); i++)
@@ -1393,7 +1393,7 @@ bool8 IsMultiBattle(void)
         return FALSE;
 }
 
-static void SwapPartyPokemon(struct Pokemon *mon1, struct Pokemon *mon2)
+static void __attribute__((unused)) SwapPartyPokemon(struct Pokemon *mon1, struct Pokemon *mon2)
 {
     struct Pokemon *temp = Alloc(sizeof(struct Pokemon));
 
@@ -5060,7 +5060,15 @@ void Task_AbilityCapsule(u8 taskId)
         }
         gPartyMenuUseExitCallback = TRUE;
         GetMonNickname(&gPlayerParty[tMonId], gStringVar1);
-        StringCopy(gStringVar2, gAbilitiesInfo[GetAbilityBySpecies(tSpecies, tAbilityNum, FALSE)].name);
+        {
+            u32 slots = GetMonData(&gPlayerParty[tMonId], MON_DATA_ABILITY_SLOTS, NULL);
+            u16 newAbility;
+            if (slots != 0)
+                newAbility = GetAbilityFromSlots(slots, tAbilityNum);
+            else
+                newAbility = GetAbilityBySpecies(tSpecies, tAbilityNum, FALSE);
+            StringCopy(gStringVar2, gAbilitiesInfo[newAbility].name);
+        }
         StringExpandPlaceholders(gStringVar4, askText);
         PlaySE(SE_SELECT);
         DisplayPartyMenuMessage(gStringVar4, 1);
@@ -5095,6 +5103,19 @@ void Task_AbilityCapsule(u8 taskId)
         break;
     case 3:
         PlaySE(SE_USE_ITEM);
+        // Update ability slot (and abilitySlots if set) so done text shows the new ability
+        {
+            struct Pokemon *mon = &gPlayerParty[tMonId];
+            u32 slots = GetMonData(mon, MON_DATA_ABILITY_SLOTS, NULL);
+            if (slots != 0)
+            {
+                SetCurrentSlotInSlots(&slots, tAbilityNum);
+                SetMonData(mon, MON_DATA_ABILITY_SLOTS, &slots);
+            }
+            SetMonData(mon, MON_DATA_ABILITY_NUM, &tAbilityNum);
+        }
+        GetMonNickname(&gPlayerParty[tMonId], gStringVar1);
+        StringCopy(gStringVar2, gAbilitiesInfo[GetMonAbility(&gPlayerParty[tMonId])].name);
         StringExpandPlaceholders(gStringVar4, doneText);
         DisplayPartyMenuMessage(gStringVar4, 1);
         ScheduleBgCopyTilemapToVram(2);
@@ -5105,7 +5126,6 @@ void Task_AbilityCapsule(u8 taskId)
             tState++;
         break;
     case 5:
-        SetMonData(&gPlayerParty[tMonId], MON_DATA_ABILITY_NUM, &tAbilityNum);
         RemoveBagItem(gSpecialVar_ItemId, 1);
         gTasks[taskId].func = Task_ClosePartyMenu;
         break;
@@ -5200,7 +5220,15 @@ void Task_AbilityPatch(u8 taskId)
         }
         gPartyMenuUseExitCallback = TRUE;
         GetMonNickname(&gPlayerParty[tMonId], gStringVar1);
-        StringCopy(gStringVar2, gAbilitiesInfo[GetAbilityBySpecies(tSpecies, tAbilityNum, FALSE)].name);
+        {
+            u32 slots = GetMonData(&gPlayerParty[tMonId], MON_DATA_ABILITY_SLOTS, NULL);
+            u16 newAbility;
+            if (slots != 0)
+                newAbility = GetAbilityFromSlots(slots, tAbilityNum);
+            else
+                newAbility = GetAbilityBySpecies(tSpecies, tAbilityNum, FALSE);
+            StringCopy(gStringVar2, gAbilitiesInfo[newAbility].name);
+        }
         StringExpandPlaceholders(gStringVar4, askText);
         PlaySE(SE_SELECT);
         DisplayPartyMenuMessage(gStringVar4, 1);
@@ -5235,6 +5263,19 @@ void Task_AbilityPatch(u8 taskId)
         break;
     case 3:
         PlaySE(SE_USE_ITEM);
+        // Update ability slot (and abilitySlots if set) so done text shows the new ability
+        {
+            struct Pokemon *mon = &gPlayerParty[tMonId];
+            u32 slots = GetMonData(mon, MON_DATA_ABILITY_SLOTS, NULL);
+            if (slots != 0)
+            {
+                SetCurrentSlotInSlots(&slots, tAbilityNum);
+                SetMonData(mon, MON_DATA_ABILITY_SLOTS, &slots);
+            }
+            SetMonData(mon, MON_DATA_ABILITY_NUM, &tAbilityNum);
+        }
+        GetMonNickname(&gPlayerParty[tMonId], gStringVar1);
+        StringCopy(gStringVar2, gAbilitiesInfo[GetMonAbility(&gPlayerParty[tMonId])].name);
         StringExpandPlaceholders(gStringVar4, doneText);
         DisplayPartyMenuMessage(gStringVar4, 1);
         ScheduleBgCopyTilemapToVram(2);
@@ -5245,7 +5286,6 @@ void Task_AbilityPatch(u8 taskId)
             tState++;
         break;
     case 5:
-        SetMonData(&gPlayerParty[tMonId], MON_DATA_ABILITY_NUM, &tAbilityNum);
         RemoveBagItem(gSpecialVar_ItemId, 1);
         gTasks[taskId].func = Task_ClosePartyMenu;
         break;

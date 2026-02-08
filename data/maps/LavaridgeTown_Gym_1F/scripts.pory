@@ -95,6 +95,7 @@ LavaridgeTown_Gym_1F_EventScript_FlanneryDefeated::
 	end
 
 LavaridgeTown_Gym_1F_EventScript_GiveOverheat2::
+	giveitem ITEM_ABILITY_SHARD, 1
 	giveitem ITEM_TM_OVERHEAT
 	giveitem ITEM_TM_WILL_O_WISP
 	giveitem ITEM_TM_HEAT_CRASH
@@ -107,6 +108,7 @@ LavaridgeTown_Gym_1F_EventScript_GiveOverheat2::
 	end
 
 LavaridgeTown_Gym_1F_EventScript_GiveOverheat::
+	giveitem ITEM_ABILITY_SHARD, 1
 	giveitem ITEM_TM_OVERHEAT
 	giveitem ITEM_TM_WILL_O_WISP
 	giveitem ITEM_TM_HEAT_CRASH

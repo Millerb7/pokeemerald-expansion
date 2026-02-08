@@ -2702,6 +2702,33 @@ union EvolutionTracker
     struct EvolutionTrackerBitfield asField;
 };
 
+// abilitySlots bit layout: bits 0-8 slot0, 9-17 slot1, 18-26 slot2, 27-28 currentSlot, 29 cantRandomize
+#define ABILITY_SLOTS_SHIFT(slot)  ((slot) * 9)
+#define ABILITY_SLOTS_MASK         0x1FFu
+#define CURRENT_SLOT_SHIFT         27
+#define CURRENT_SLOT_MASK          3u
+
+u16 GetAbilityFromSlots(u32 packed, u8 slot)
+{
+    return (u16)((packed >> ABILITY_SLOTS_SHIFT(slot)) & ABILITY_SLOTS_MASK);
+}
+
+void SetAbilityInSlots(u32 *packed, u8 slot, u16 ability)
+{
+    u32 shift = ABILITY_SLOTS_SHIFT(slot);
+    *packed = (*packed & ~(ABILITY_SLOTS_MASK << shift)) | ((u32)(ability & ABILITY_SLOTS_MASK) << shift);
+}
+
+u8 GetCurrentSlotFromSlots(u32 packed)
+{
+    return (u8)((packed >> CURRENT_SLOT_SHIFT) & CURRENT_SLOT_MASK);
+}
+
+void SetCurrentSlotInSlots(u32 *packed, u8 slot)
+{
+    *packed = (*packed & ~(CURRENT_SLOT_MASK << CURRENT_SLOT_SHIFT)) | ((u32)(slot & CURRENT_SLOT_MASK) << CURRENT_SLOT_SHIFT);
+}
+
 /* GameFreak called GetBoxMonData with either 2 or 3 arguments, for type
  * safety we have a GetBoxMonData macro (in include/pokemon.h) which
  * dispatches to either GetBoxMonData2 or GetBoxMonData3 based on the
@@ -2716,16 +2743,35 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
     struct PokemonSubstruct3 *substruct3 = NULL;
     union EvolutionTracker evoTracker;
 
-    // abilityOverride is outside the encrypted region
+    // abilitySlots and abilityOverride are outside the encrypted region
+    if (field == MON_DATA_ABILITY_SLOTS)
+    {
+        retVal = boxMon->abilitySlots;
+        if (data != NULL)
+        {
+            data[0] = (u8)(retVal & 0xFF);
+            data[1] = (u8)((retVal >> 8) & 0xFF);
+            data[2] = (u8)((retVal >> 16) & 0xFF);
+            data[3] = (u8)((retVal >> 24) & 0xFF);
+        }
+        return retVal;
+    }
     if (field == MON_DATA_ABILITY)
     {
-        retVal = boxMon->abilityOverride;
+        if (boxMon->abilitySlots != 0)
+            retVal = GetAbilityFromSlots(boxMon->abilitySlots, GetCurrentSlotFromSlots(boxMon->abilitySlots));
+        else
+            retVal = boxMon->abilityOverride;
         if (data != NULL)
         {
             data[0] = (u8)(retVal & 0xFF);
             data[1] = (u8)((retVal >> 8) & 0xFF);
         }
         return retVal;
+    }
+    if (field == MON_DATA_ABILITY_NUM && boxMon->abilitySlots != 0)
+    {
+        return GetCurrentSlotFromSlots(boxMon->abilitySlots);
     }
 
     // Any field greater than MON_DATA_ENCRYPT_SEPARATOR is encrypted and must be treated as such
@@ -3273,7 +3319,17 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
     struct PokemonSubstruct2 *substruct2 = NULL;
     struct PokemonSubstruct3 *substruct3 = NULL;
 
-    // abilityOverride is outside the encrypted region
+    // abilitySlots and abilityOverride are outside the encrypted region
+    if (field == MON_DATA_ABILITY_SLOTS)
+    {
+        boxMon->abilitySlots = (u32)data[0] | ((u32)data[1] << 8) | ((u32)data[2] << 16) | ((u32)data[3] << 24);
+        return;
+    }
+    if (field == MON_DATA_ABILITY_NUM && boxMon->abilitySlots != 0)
+    {
+        SetCurrentSlotInSlots(&boxMon->abilitySlots, data[0]);
+        return;
+    }
     if (field == MON_DATA_ABILITY)
     {
         boxMon->abilityOverride = data[0] + (data[1] << 8);
@@ -3830,6 +3886,10 @@ u16 GetAbilityBySpecies(u16 species, u8 abilityNum, u8 cantRandomizeAbility)
 
 u16 GetMonAbility(struct Pokemon *mon)
 {
+    u32 slots = GetMonData(mon, MON_DATA_ABILITY_SLOTS, NULL);
+    if (slots != 0)
+        return GetAbilityFromSlots(slots, GetCurrentSlotFromSlots(slots));
+
     u16 override = GetMonData(mon, MON_DATA_ABILITY, NULL);
     if (override != 0)
         return override;
@@ -4114,30 +4174,27 @@ const u32 sExpCandyExperienceTable[] = {
     [EXP_30000 - 1] = 30000,
 };
 
-// Ability Shard: pick a new slot (0, 1, or 2) different from current; slot 0/1 from full whitelist, slot 2 from hidden whitelist.
+// Ability Shard: randomize all 3 slots with one use; keep the active slot the same.
+// Pack all 3 into abilitySlots (slot 0/1 from full whitelist, slot 2 from hidden whitelist).
 static bool8 TryRerollAbilityFromWhitelist(struct Pokemon *mon)
 {
     u8 currentSlot = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
-    u8 candidates[2];
-    u8 numCandidates = 0;
-    u8 i;
-    u8 newSlot;
-    u16 newAbilityId;
+    u16 newAbilities[NUM_ABILITY_SLOTS];
+    u32 packed = 0;
+    u8 cantRandomize = GetMonData(mon, MON_DATA_CANT_RANDOMIZE_ABILITY, NULL);
 
-    for (i = 0; i < NUM_ABILITY_SLOTS; i++)
-    {
-        if (i != currentSlot)
-            candidates[numCandidates++] = i;
-    }
-    newSlot = candidates[Random() % 2];
+    // Randomize all 3 slots: 0 and 1 from full whitelist, 2 from hidden whitelist
+    newAbilities[0] = GetRandomAbilityFromFullWhitelist();
+    newAbilities[1] = GetRandomAbilityFromFullWhitelist();
+    newAbilities[2] = GetRandomHiddenAbility();
 
-    if (newSlot == 2)
-        newAbilityId = GetRandomHiddenAbility();
-    else
-        newAbilityId = GetRandomAbilityFromFullWhitelist();
+    SetAbilityInSlots(&packed, 0, newAbilities[0]);
+    SetAbilityInSlots(&packed, 1, newAbilities[1]);
+    SetAbilityInSlots(&packed, 2, newAbilities[2]);
+    SetCurrentSlotInSlots(&packed, currentSlot);
+    packed |= (u32)(cantRandomize & 1) << 29;
 
-    SetMonData(mon, MON_DATA_ABILITY_NUM, &newSlot);
-    SetMonData(mon, MON_DATA_ABILITY, &newAbilityId);
+    SetMonData(mon, MON_DATA_ABILITY_SLOTS, &packed);
     return TRUE;
 }
 

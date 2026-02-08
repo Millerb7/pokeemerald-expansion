@@ -875,7 +875,7 @@ PetalburgCity_Gym_EventScript_NormanBattle::
 # 438 "data/maps/PetalburgCity_Gym/scripts.pory"
 PetalburgCity_Gym_EventScript_GiveFacade::
 # 439 "data/maps/PetalburgCity_Gym/scripts.pory"
-	giveitem ITEM_TM_RETURN
+	giveitem ITEM_ABILITY_SHARD, 1
 # 440 "data/maps/PetalburgCity_Gym/scripts.pory"
 	giveitem ITEM_TM_FACADE
 # 441 "data/maps/PetalburgCity_Gym/scripts.pory"

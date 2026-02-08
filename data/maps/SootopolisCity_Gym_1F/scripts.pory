@@ -124,6 +124,7 @@ SootopolisCity_Gym_1F_EventScript_JuanDefeated::
 	end
 
 SootopolisCity_Gym_1F_EventScript_GiveWaterPulse::
+	giveitem ITEM_ABILITY_SHARD, 1
 	giveitem ITEM_GRIMMITE
 	giveitem ITEM_TM_MOONBLAST
 	giveitem ITEM_TM_MISTY_EXPLOSION
@@ -132,6 +133,7 @@ SootopolisCity_Gym_1F_EventScript_GiveWaterPulse::
 	return
 
 SootopolisCity_Gym_1F_EventScript_GiveWaterPulse2::
+	giveitem ITEM_ABILITY_SHARD, 1
 	giveitem ITEM_GRIMMITE
 	giveitem ITEM_TM_MOONBLAST
 	giveitem ITEM_TM_MISTY_EXPLOSION

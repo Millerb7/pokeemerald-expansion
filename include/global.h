@@ -558,7 +558,8 @@ struct SaveBlock2
     /*0x64C*/ struct BattleFrontier frontier;
     /*0xF2C*/ bool8 autoRun;
               struct Time fakeRTC;
-}; // sizeof=0xF2C
+    /*0xF2E*/ u16 saveFormatVersion; // Bumped when save layout changes (e.g. BoxPokemon.abilityOverride)
+}; // sizeof=0xF30
 //from debug as of 3/4/2024 before any space changes: 3884b/3968b; free space, 84b.
 //after changing SECTOR_DATA_SIZE -> 4084: 3884b/4084b; free space: 200b.
 //change BAG_TMHM_COUNT from 64 -> 120; results: 3884b/4084b; free space: 200b (unchanged)

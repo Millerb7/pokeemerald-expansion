@@ -69,6 +69,7 @@
 #include "trade.h"
 #include "union_room.h"
 #include "window.h"
+#include "constants/abilities.h"
 #include "constants/battle.h"
 #include "constants/battle_frontier.h"
 #include "constants/field_effects.h"
@@ -5121,6 +5122,59 @@ void ItemUseCB_AbilityCapsule(u8 taskId, TaskFunc task)
     tAbilityNum = GetMonData(&gPlayerParty[tMonId], MON_DATA_ABILITY_NUM, NULL) ^ 1;
     SetWordTaskArg(taskId, tOldFunc, (uintptr_t)(gTasks[taskId].func));
     gTasks[taskId].func = Task_AbilityCapsule;
+}
+
+void Task_AbilityShard(u8 taskId)
+{
+    static const u8 doneText[] = _("{STR_VAR_1}'s ability changed!{PAUSE_UNTIL_PRESS}");
+    s16 *data = gTasks[taskId].data;
+
+    switch (tState)
+    {
+    case 0:
+        // Only check if species is valid, not ability count
+        if (!tSpecies)
+        {
+            gPartyMenuUseExitCallback = FALSE;
+            PlaySE(SE_SELECT);
+            DisplayPartyMenuMessage(gText_WontHaveEffect, 1);
+            ScheduleBgCopyTilemapToVram(2);
+            gTasks[taskId].func = Task_ClosePartyMenuAfterText;
+            return;
+        }
+        PlaySE(SE_USE_ITEM);
+        if (ApplyAbilityShard(&gPlayerParty[tMonId]))
+        {
+            GetMonNickname(&gPlayerParty[tMonId], gStringVar1);
+            StringExpandPlaceholders(gStringVar4, doneText);
+            DisplayPartyMenuMessage(gStringVar4, 1);
+            ScheduleBgCopyTilemapToVram(2);
+            tState++;
+        }
+        else
+        {
+            gTasks[taskId].func = Task_ClosePartyMenu;
+        }
+        break;
+    case 1:
+        if (!IsPartyMenuTextPrinterActive())
+        {
+            RemoveBagItem(gSpecialVar_ItemId, 1);
+            gTasks[taskId].func = Task_ClosePartyMenu;
+        }
+        break;
+    }
+}
+
+void ItemUseCB_AbilityShard(u8 taskId, TaskFunc task)
+{
+    s16 *data = gTasks[taskId].data;
+
+    tState = 0;
+    tMonId = gPartyMenu.slotId;
+    tSpecies = GetMonData(&gPlayerParty[tMonId], MON_DATA_SPECIES, NULL);
+    SetWordTaskArg(taskId, tOldFunc, (uintptr_t)(gTasks[taskId].func));
+    gTasks[taskId].func = Task_AbilityShard;
 }
 
 void Task_AbilityPatch(u8 taskId)

@@ -12,6 +12,7 @@
 #include "data.h"
 #include "data/randomizer/special_form_tables.h"
 #include "data/randomizer/ability_whitelist.h"
+#include "data/randomizer/hidden_ability_whitelist.h"
 
 
 const u16 gStarterAndGiftMonTable[MY_STARTER_AND_GIFT_MON_COUNT] =
@@ -1273,6 +1274,26 @@ u16 RandomizeAbility(u16 species, u8 abilityNum, u16 originalAbility)
 
     // Randomize abilities
     return sRandomizerAbilityWhitelist[RandomizerNextRange(&state, ABILITY_WHITELIST_SIZE)];
+}
+
+// Fills outAbilities[0..2] with 3 random abilities from the whitelist (for Ability Shard item).
+void GetThreeRandomAbilitiesFromWhitelist(u16 *outAbilities)
+{
+    u8 i;
+    for (i = 0; i < 3; i++)
+        outAbilities[i] = sRandomizerAbilityWhitelist[Random() % ABILITY_WHITELIST_SIZE];
+}
+
+// Returns a random ability from the full ability whitelist (for Ability Shard slots 0/1).
+u16 GetRandomAbilityFromFullWhitelist(void)
+{
+    return sRandomizerAbilityWhitelist[Random() % ABILITY_WHITELIST_SIZE];
+}
+
+// Returns a random ability from the hidden ability whitelist (for Ability Shard slot 2).
+u16 GetRandomHiddenAbility(void)
+{
+    return sHiddenAbilityWhitelist[Random() % HIDDEN_ABILITY_WHITELIST_SIZE];
 }
 
 #endif // RANDOMIZER_AVAILABLE

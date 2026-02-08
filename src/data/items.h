@@ -15554,11 +15554,11 @@ const struct Item gItemsInfo[] =
     [ITEM_ABILITY_SHARD] =
     {
         .name = _("Ability Shard"),
+        .pluralName = _("Ability Shards"),
         .price = 0,
-        .importance = 1,
         .description = sAbilityShardDesc,
-        .pocket = POCKET_KEY_ITEMS,
-        .type = ITEM_USE_FIELD,
+        .pocket = POCKET_ITEMS,
+        .type = ITEM_USE_PARTY_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_AbilityShard,
         .iconPic = gItemIcon_AdamantCrystal,
         .iconPalette = gItemIconPalette_AdamantCrystal,

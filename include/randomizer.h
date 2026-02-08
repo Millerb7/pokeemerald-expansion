@@ -77,6 +77,15 @@ u16 RandomizeEggMon(u16 originalSlot, const u16* originalEggMons);
 // Given a species and an abilityNum, returns a replacement for that ability.
 u16 RandomizeAbility(u16 species, u8 abilityNum, u16 originalAbility);
 
+// Fills outAbilities[0..2] with 3 random abilities from the whitelist (for Ability Shard item).
+void GetThreeRandomAbilitiesFromWhitelist(u16 *outAbilities);
+
+// Returns a random ability from the full ability whitelist (for Ability Shard slots 0/1).
+u16 GetRandomAbilityFromFullWhitelist(void);
+
+// Returns a random ability from the hidden ability whitelist (for Ability Shard slot 2).
+u16 GetRandomHiddenAbility(void);
+
 static inline bool32 GroupSetsIntersect(struct RandomizerGroupSet* originalCache, struct RandomizerGroupSet* targetCache)
 {
     return originalCache->maxGroup >= targetCache->minGroup

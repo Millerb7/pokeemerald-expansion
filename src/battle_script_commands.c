@@ -7026,7 +7026,7 @@ static void Cmd_switchindataupdate(void)
     gBattleMons[battler].types[0] = gSpeciesInfo[gBattleMons[battler].species].types[0];
     gBattleMons[battler].types[1] = gSpeciesInfo[gBattleMons[battler].species].types[1];
     gBattleMons[battler].types[2] = TYPE_MYSTERY;
-    gBattleMons[battler].ability = GetAbilityBySpecies(gBattleMons[battler].species, gBattleMons[battler].abilityNum, gBattleMons[battler].cantRandomizeAbility);
+    gBattleMons[battler].ability = GetMonAbility(&GetBattlerParty(battler)[gBattlerPartyIndexes[battler]]);
     #if TESTING
     if (gTestRunnerEnabled)
     {

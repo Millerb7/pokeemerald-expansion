@@ -284,8 +284,8 @@ void ItemUseCB_NatureSwap(u8 taskId)
 
 void ItemUseOutOfBattle_AbilityShard(u8 taskId)
 {
-    LockPlayerFieldControls();
-    DestroyTask(taskId);
+    gItemUseCB = ItemUseCB_AbilityShard;
+    SetUpItemUseCallback(taskId);
 }
 
 void ItemUseOutOfBattle_TestAbilityShard(u8 taskId)

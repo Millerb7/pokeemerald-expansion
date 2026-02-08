@@ -17,6 +17,7 @@
 #include "link_rfu.h"
 #include "palette.h"
 #include "party_menu.h"
+#include "pokemon.h"
 #include "recorded_battle.h"
 #include "string_util.h"
 #include "sound.h"
@@ -1603,6 +1604,7 @@ static u32 GetBattlerMonData(u32 battler, struct Pokemon *party, u32 monId, u8 *
         battleMon.spDefense = GetMonData(&party[monId], MON_DATA_SPDEF);
         battleMon.abilityNum = GetMonData(&party[monId], MON_DATA_ABILITY_NUM);
         battleMon.cantRandomizeAbility = GetMonData(&party[monId], MON_DATA_CANT_RANDOMIZE_ABILITY);
+        battleMon.ability = GetMonAbility(&party[monId]);
         battleMon.otId = GetMonData(&party[monId], MON_DATA_OT_ID);
         battleMon.metLevel = GetMonData(&party[monId], MON_DATA_MET_LEVEL);
         battleMon.isShiny = GetMonData(&party[monId], MON_DATA_IS_SHINY);

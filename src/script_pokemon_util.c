@@ -572,6 +572,10 @@ static u32 ScriptGiveMonParameterized(u8 side, u8 slot, u16 species, u8 level, u
         } while (GetAbilityBySpecies(species, abilityNum, FALSE) == ABILITY_NONE);
     }
     SetMonData(&mon, MON_DATA_ABILITY_NUM, &abilityNum);
+    {
+        u16 abilityId = GetAbilityBySpecies(species, abilityNum, FALSE);
+        SetMonData(&mon, MON_DATA_ABILITY, &abilityId);
+    }
 
     // ball
     if (ball > POKEBALL_COUNT)

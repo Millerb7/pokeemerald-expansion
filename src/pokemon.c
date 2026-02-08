@@ -1565,6 +1565,14 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
         value = personality & 1;
         SetBoxMonData(boxMon, MON_DATA_ABILITY_NUM, &value);
     }
+    else
+    {
+        value = 0;
+    }
+    {
+        u16 abilityId = GetAbilityBySpecies(species, value, FALSE);
+        SetBoxMonData(boxMon, MON_DATA_ABILITY, &abilityId);
+    }
 
     GiveBoxMonInitialMoveset(boxMon);
 }
@@ -2708,6 +2716,18 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
     struct PokemonSubstruct3 *substruct3 = NULL;
     union EvolutionTracker evoTracker;
 
+    // abilityOverride is outside the encrypted region
+    if (field == MON_DATA_ABILITY)
+    {
+        retVal = boxMon->abilityOverride;
+        if (data != NULL)
+        {
+            data[0] = (u8)(retVal & 0xFF);
+            data[1] = (u8)((retVal >> 8) & 0xFF);
+        }
+        return retVal;
+    }
+
     // Any field greater than MON_DATA_ENCRYPT_SEPARATOR is encrypted and must be treated as such
     if (field > MON_DATA_ENCRYPT_SEPARATOR)
     {
@@ -3252,6 +3272,13 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
     struct PokemonSubstruct1 *substruct1 = NULL;
     struct PokemonSubstruct2 *substruct2 = NULL;
     struct PokemonSubstruct3 *substruct3 = NULL;
+
+    // abilityOverride is outside the encrypted region
+    if (field == MON_DATA_ABILITY)
+    {
+        boxMon->abilityOverride = data[0] + (data[1] << 8);
+        return;
+    }
 
     if (field > MON_DATA_ENCRYPT_SEPARATOR)
     {
@@ -3803,10 +3830,13 @@ u16 GetAbilityBySpecies(u16 species, u8 abilityNum, u8 cantRandomizeAbility)
 
 u16 GetMonAbility(struct Pokemon *mon)
 {
+    u16 override = GetMonData(mon, MON_DATA_ABILITY, NULL);
+    if (override != 0)
+        return override;
+
     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     u8 abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
     u8 cantRandomizeAbility = GetMonData(mon, MON_DATA_CANT_RANDOMIZE_ABILITY, NULL);
-
     return GetAbilityBySpecies(species, abilityNum, cantRandomizeAbility);
 }
 
@@ -4018,7 +4048,7 @@ void PokemonToBattleMon(struct Pokemon *src, struct BattlePokemon *dst)
     dst->types[1] = gSpeciesInfo[dst->species].types[1];
     dst->types[2] = TYPE_MYSTERY;
     dst->isShiny = IsMonShiny(src);
-    dst->ability = GetAbilityBySpecies(dst->species, dst->abilityNum, dst->cantRandomizeAbility);
+    dst->ability = GetMonAbility(src);
     GetMonData(src, MON_DATA_NICKNAME, nickname);
     StringCopy_Nickname(dst->nickname, nickname);
     GetMonData(src, MON_DATA_OT_NAME, dst->otName);
@@ -4084,10 +4114,36 @@ const u32 sExpCandyExperienceTable[] = {
     [EXP_30000 - 1] = 30000,
 };
 
+// Ability Shard: pick a new slot (0, 1, or 2) different from current; slot 0/1 from full whitelist, slot 2 from hidden whitelist.
 static bool8 TryRerollAbilityFromWhitelist(struct Pokemon *mon)
 {
+    u8 currentSlot = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
+    u8 candidates[2];
+    u8 numCandidates = 0;
+    u8 i;
+    u8 newSlot;
+    u16 newAbilityId;
 
+    for (i = 0; i < NUM_ABILITY_SLOTS; i++)
+    {
+        if (i != currentSlot)
+            candidates[numCandidates++] = i;
+    }
+    newSlot = candidates[Random() % 2];
+
+    if (newSlot == 2)
+        newAbilityId = GetRandomHiddenAbility();
+    else
+        newAbilityId = GetRandomAbilityFromFullWhitelist();
+
+    SetMonData(mon, MON_DATA_ABILITY_NUM, &newSlot);
+    SetMonData(mon, MON_DATA_ABILITY, &newAbilityId);
     return TRUE;
+}
+
+bool8 ApplyAbilityShard(struct Pokemon *mon)
+{
+    return TryRerollAbilityFromWhitelist(mon);
 }
 
 // Returns TRUE if the item has no effect on the Pokémon, FALSE otherwise
@@ -4191,19 +4247,6 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                     retVal = FALSE;
                 }
             }
-
-            // NEW: Ability Shard 
-            // if (itemEffect[i] & ITEM3_CHANGE_ABILITY)
-            // {
-            //     if (ApplyAbilityShard(mon, item))
-            //         retVal = FALSE;
-            // }
-
-            // if (itemEffect[i] & ITEM3_CHANGE_TestABILITY)
-            // {
-            //     if (ApplyAbilityShard(mon, item))
-            //         retVal = FALSE;
-            // }
 
             // Cure status
             if ((itemEffect[i] & ITEM3_SLEEP) && HealStatusConditions(mon, STATUS1_SLEEP, battlerId) == 0)

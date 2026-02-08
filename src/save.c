@@ -7,11 +7,13 @@
 #include "decompress.h"
 #include "load_save.h"
 #include "overworld.h"
+#include "pokemon.h"
 #include "pokemon_storage_system.h"
 #include "main.h"
 #include "trainer_hill.h"
 #include "link.h"
 #include "constants/game_stat.h"
+#include "constants/global.h"
 
 static u16 CalculateChecksum(void *, u16);
 static bool8 ReadFlashSector(u8, struct SaveSector *);
@@ -110,7 +112,8 @@ COMMON_DATA struct SaveSectorLocation gRamSaveSectorLocations[NUM_SECTORS_PER_SL
 COMMON_DATA u16 gSaveUnusedVar2 = 0;
 COMMON_DATA u16 gSaveAttemptStatus = 0;
 
-EWRAM_DATA struct SaveSector gSaveDataBuffer = {0}; // Buffer used for reading/writing sectors
+// In IWRAM to free EWRAM (BoxPokemon.abilityOverride added ~852 bytes to save blocks in EWRAM)
+IWRAM_DATA struct SaveSector gSaveDataBuffer = {0}; // Buffer used for reading/writing sectors
 
 void ClearSaveData(void)
 {
@@ -638,6 +641,8 @@ u8 HandleSavingData(u8 saveType)
 
     gTrainerHillVBlankCounter = NULL;
     UpdateSaveAddresses();
+    gSaveBlock2Ptr->saveFormatVersion = SAVE_FORMAT_VERSION_CURRENT;
+
     switch (saveType)
     {
     case SAVE_HALL_OF_FAME_ERASE_BEFORE:
@@ -794,6 +799,17 @@ bool8 WriteSaveBlock1Sector(void)
     return finished;
 }
 
+// When loading a save from before abilityOverride was added, zero it so slot-based lookup is used.
+static void ZeroAbilityOverrideForOldSaveFormat(void)
+{
+    u32 i, box, slot;
+    for (i = 0; i < PARTY_SIZE; i++)
+        gSaveBlock1Ptr->playerParty[i].box.abilityOverride = 0;
+    for (box = 0; box < TOTAL_BOXES_COUNT; box++)
+        for (slot = 0; slot < IN_BOX_COUNT; slot++)
+            gPokemonStoragePtr->boxes[box][slot].abilityOverride = 0;
+}
+
 u8 LoadGameSave(u8 saveType)
 {
     u8 status;
@@ -811,6 +827,8 @@ u8 LoadGameSave(u8 saveType)
     default:
         status = TryLoadSaveSlot(FULL_SAVE_SLOT, gRamSaveSectorLocations);
         CopyPartyAndObjectsFromSave();
+        if (status == SAVE_STATUS_OK && gSaveBlock2Ptr->saveFormatVersion < SAVE_FORMAT_VERSION_ABILITY_OVERRIDE)
+            ZeroAbilityOverrideForOldSaveFormat();
         gSaveFileStatus = status;
         gGameContinueCallback = 0;
         break;

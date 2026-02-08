@@ -752,27 +752,40 @@ static void InheritPokeball(struct Pokemon *egg, struct BoxPokemon *father, stru
 
 static void InheritAbility(struct Pokemon *egg, struct BoxPokemon *father, struct BoxPokemon *mother)
 {
-    u16 fatherAbility = GetBoxMonData(father, MON_DATA_ABILITY_NUM);
-    u16 motherAbility = GetBoxMonData(mother, MON_DATA_ABILITY_NUM);
+    u16 fatherAbilityNum = GetBoxMonData(father, MON_DATA_ABILITY_NUM);
+    u16 motherAbilityNum = GetBoxMonData(mother, MON_DATA_ABILITY_NUM);
     u16 motherSpecies = GetBoxMonData(mother, MON_DATA_SPECIES);
-    u16 inheritAbility = motherAbility;
+    u16 inheritAbilityNum = motherAbilityNum;
+    u16 inheritAbilityId;
+    struct BoxPokemon *inheritingParent = mother;
 
     if (motherSpecies == SPECIES_DITTO)
     {
         if (P_ABILITY_INHERITANCE >= GEN_6)
-            inheritAbility = fatherAbility;
+        {
+            inheritAbilityNum = fatherAbilityNum;
+            inheritingParent = father;
+        }
         else
             return;
     }
 
-    if (inheritAbility < 2 && (Random() % 10 < 8))
+    if (inheritAbilityNum < 2 && (Random() % 10 < 8))
     {
-        SetMonData(egg, MON_DATA_ABILITY_NUM, &inheritAbility);
+        SetMonData(egg, MON_DATA_ABILITY_NUM, &inheritAbilityNum);
+        inheritAbilityId = GetBoxMonData(inheritingParent, MON_DATA_ABILITY);
+        if (inheritAbilityId == 0)
+            inheritAbilityId = GetAbilityBySpecies(GetBoxMonData(inheritingParent, MON_DATA_SPECIES), inheritAbilityNum, FALSE);
+        SetMonData(egg, MON_DATA_ABILITY, &inheritAbilityId);
     }
     else if (Random() % 10 < (P_ABILITY_INHERITANCE >= GEN_6 ? 6 : 8))
     {
         // Hidden Abilities have a different chance of being passed down
-        SetMonData(egg, MON_DATA_ABILITY_NUM, &inheritAbility);
+        SetMonData(egg, MON_DATA_ABILITY_NUM, &inheritAbilityNum);
+        inheritAbilityId = GetBoxMonData(inheritingParent, MON_DATA_ABILITY);
+        if (inheritAbilityId == 0)
+            inheritAbilityId = GetAbilityBySpecies(GetBoxMonData(inheritingParent, MON_DATA_SPECIES), inheritAbilityNum, FALSE);
+        SetMonData(egg, MON_DATA_ABILITY, &inheritAbilityId);
     }
 }
 
